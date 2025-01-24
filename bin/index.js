@@ -32,7 +32,7 @@ program
 
 program
 	.command('create-checkout')
-	.description('Create subscriptions')
+	.description('Create a checkout URL')
 	.option('--prod-secret-key <key>', 'Your production secret API key')
 	.option('--test-secret-key <key>', 'Your test secret API key')
 	.option('--prod-checkout-key <key>', 'Your production checkout key')

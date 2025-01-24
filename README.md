@@ -53,7 +53,7 @@ Options:
 
 Commands:
   fetch-payment [options]                  Fetch payments from a list of payment ID
-  create-checkout [options]                Create subscriptions
+  create-checkout [options]                Create a checkout URL
   create-subscriptions [options] <amount>  Create subscriptions
   help [command]                           display help for command
 ```
