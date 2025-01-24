@@ -180,24 +180,29 @@ async function retrievePayment(paymentId, options) {
 
 export default async function runCreateSubscriptions(amount, options, type) {
 	const responses = [];
-	updateLoader(0, amount, "Fetching payments");
+	updateLoader(0, amount, "Creating subscriptions");
 	for (let i = 0; i < amount; i++) {
 		const setDelay = (1000 / process.env.REQUEST_PER_SECOND);
-		await delay(setDelay);
-		const paymentId = await createPayment(options)
-		const redirectUrl = await payPayment(paymentId)
-		const ThreedsSessionId = redirectUrl.split('/')[4]
-		const paidPayment = await pares(paymentId, ThreedsSessionId)
-		const response = await retrievePayment(paymentId, options)
-		responses.push({
-			subscriptionId: response.data.payment.subscription.id,
-			currency: response.data.payment.orderDetails.currency,
-			paymentType: response.data.payment.paymentDetails.paymentType,
-			paymentMethod: response.data.payment.paymentDetails.paymentMethod,
-			maskedPan: response.data.payment.paymentDetails.cardDetails.maskedPan,
-			expiryDate: response.data.payment.paymentDetails.cardDetails.expiryDate
-		});
-		updateLoader(i + 1, amount, "Fetching payments");
+		try {
+			await delay(setDelay);
+			const paymentId = await createPayment(options);
+			const redirectUrl = await payPayment(paymentId);
+			const ThreedsSessionId = redirectUrl.split('/')[4];
+			const paidPayment = await pares(paymentId, ThreedsSessionId);
+			const response = await retrievePayment(paymentId, options);
+			responses.push({
+				subscriptionId: response.data.payment.subscription.id,
+				currency: response.data.payment.orderDetails.currency,
+				paymentType: response.data.payment.paymentDetails.paymentType,
+				paymentMethod: response.data.payment.paymentDetails.paymentMethod,
+				maskedPan: response.data.payment.paymentDetails.cardDetails.maskedPan,
+				expiryDate: response.data.payment.paymentDetails.cardDetails.expiryDate
+			});
+			updateLoader(i + 1, amount, "Creating subscriptions");
+		} catch (error) {
+			// Handle any errors that may be thrown during the process
+			console.error('Payment processing failed:', error);
+		}
 	}
 	console.log('')
 	console.table(responses);

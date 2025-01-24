@@ -2,42 +2,71 @@
 
 This is a CLI tool to make it easy to interact with Nexi Checkout Payment API.
 
-<!-- GETTING STARTED -->
+## Pre-requisites
 
-## Getting Started
+-   Install [Node.js](https://nodejs.org/en/)
 
-To get a local copy up and running follow these simple example steps.
+## Installation
 
-### Prerequisites
+1.  Clone the repository
 
--   npm
-    ```sh
-    npm install npm@latest -g
-    ```
+```zsh
+$ gh repo clone garfazadeh/nexi-cli
+```
 
-### Installation
+2.  Install dependencies
 
-_This is how you install the tool._
+```zsh
+$ cd nexi-cli
+$ npm install
+```
 
-1. Clone the repo
-    ```sh
-    gh repo clone garfazadeh/easy_cli
-    ```
-2. Install NPM packages
-    ```sh
-    npm install
-    ```
-3. Install NPM packages
-`sh
-    npm install
-    `
+3.  Create `.env` from `.env.example` and add environment variables
+
+```zsh
+$ mv .env.example .env
+$ vim .env
+```
+
+4.  Make CLI accessible globally
+
+```zsh
+$ npm link
+```
+
  <!-- USAGE EXAMPLES -->
 
 ## Usage
 
-You can supply a file contaning a list of payment IDs and the API-keys directly in the CLI. Example:
+To view all top-level Nexi CLI commands, enter `nexi-cli` without arguments.
 
-1. Run the script
-    ```sh
-    node easy-cli.js -t -i paymentIds.txt -k "INSERT_SECRET_API_KEY" -s
-    ```
+```zsh
+$ nexi-cli
+Usage: nexi-cli [options] [command]
+
+Nexi Checkout CLI
+A CLI tool to interact with Nexi Checkout Payment API
+
+Options:
+  -V, --version                            output the version number
+  -h, --help                               display help for command
+
+Commands:
+  fetch-payment [options]                  Fetch payments from a list of payment ID
+  create-checkout [options]                Create subscriptions
+  create-subscriptions [options] <amount>  Create subscriptions
+  help [command]                           display help for command
+```
+
+## Example:
+
+```zsh
+$ nexi-cli create-subscriptions 2
+Fetching payments: ██████████████████████████████████████████████████ 2/2
+┌─────────┬────────────────────────────────────┬──────────┬─────────────┬───────────────┬────────────────────┬────────────┐
+│ (index) │ subscriptionId                     │ currency │ paymentType │ paymentMethod │ maskedPan          │ expiryDate │
+├─────────┼────────────────────────────────────┼──────────┼─────────────┼───────────────┼────────────────────┼────────────┤
+│ 0       │ '007ebdc585a9407bb6c76d74854c952f' │ 'SEK'    │ 'CARD'      │ 'Visa'        │ '49250000****0061' │ '0528'     │
+│ 1       │ 'd0e9ea75ea1a42ba95faeb1b1d37ecf8' │ 'SEK'    │ 'CARD'      │ 'Visa'        │ '49250000****0079' │ '1127'     │
+└─────────┴────────────────────────────────────┴──────────┴─────────────┴───────────────┴────────────────────┴────────────┘
+```
