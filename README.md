@@ -74,19 +74,19 @@ Creating subscriptions: ██████████████████�
 ## Todo
 
 -   [x] Retrieve payment information
--   [-] Create checkout
-    -   [] Create embedded checkout
+-   [ ] Create checkout
+    -   [ ] Create embedded checkout
     -   [x] Create hosted checkout
--   [-] Create subscriptions
+-   [ ] Create subscriptions
     -   [x] Create scheduled subscriptions
-    -   [] Create unscheduled subscriptions
--   [] Webhooks
--   [] Cancel payments
--   [] Charge payments
-    -   [] Single one-off charges
-    -   [] Bulk subscription charges
-    -   [] Single subscription charges
--   [] Refund payments
--   [] Verify subscriptions
--   [] Retrieve bulk
--   [] Reconciliate payments
+    -   [ ] Create unscheduled subscriptions
+-   [ ] Webhooks support
+-   [ ] Cancel payments
+-   [ ] Charge payments
+    -   [ ] Single one-off charges
+    -   [ ] Bulk subscription charges
+    -   [ ] Single subscription charges
+-   [ ] Refund payments
+-   [ ] Verify subscriptions
+-   [ ] Retrieve bulk
+-   [ ] Reconciliate payments
