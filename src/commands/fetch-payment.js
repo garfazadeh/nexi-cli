@@ -1,6 +1,6 @@
-import axios from 'axios';
 import Ajv from 'ajv';
 import { readFileSync } from 'fs';
+import { retrievePayment } from '../nexi-api/payment-api.js'
 import writeCsv from '../utils/write-csv.js';
 import updateLoader from '../utils/loader.js'
 
@@ -30,31 +30,6 @@ function delay(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function retrievePayment(paymentId, options) {
-	const endpoint = options.production
-		? "https://api.dibspayment.eu/v1/payments/"
-		: "https://test.api.dibspayment.eu/v1/payments/";
-	const key = options.production
-		? options.prodSecretKey
-		: options.testSecretKey;
-	const url = endpoint + paymentId;
-	try {
-		const response = await axios.get(url, {
-			headers: {
-				Authorization: `${key}`,
-			},
-		});
-		return response;
-	} catch (error) {
-		if (error.response && error.response.status === 401) {
-			console.error("Error: The supplied API key is incorrect.");
-			process.exit(1);
-		} else {
-			console.error(`Error fetching ${url}:`, error);
-		}
-	}
-}
-
 async function processList(paymentIds, options) {
 	// validate the array to make sure the format is correct
 	validateInput(paymentIds)
@@ -62,10 +37,10 @@ async function processList(paymentIds, options) {
 	const responses = [];
 	const setDelay = (1000 / process.env.REQUEST_PER_SECOND)
 	for (let i = 0; i < paymentIds.length; i++) {
-		await delay(setDelay);
 		const response = await retrievePayment(paymentIds[i], options)
 		responses.push(response.data);
 		updateLoader(i + 1, paymentIds.length, "Fetching payments");
+		await delay(setDelay);
 	}
 	return responses;
 }
