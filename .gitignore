@@ -1,0 +1,6 @@
+.env
+node_modules
+paymentIds.txt
+responses.csv
+package-lock.json
+.vscode
