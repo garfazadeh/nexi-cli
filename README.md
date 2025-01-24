@@ -58,7 +58,7 @@ Commands:
   help [command]                           display help for command
 ```
 
-## Example:
+## Example
 
 ```zsh
 $ nexi-cli create-subscriptions 2
@@ -70,3 +70,23 @@ Creating subscriptions: ██████████████████�
 │ 1       │ 'd0e9ea75ea1a42ba95faeb1b1d37ecf8' │ 'SEK'    │ 'CARD'      │ 'Visa'        │ '49250000****0079' │ '1127'     │
 └─────────┴────────────────────────────────────┴──────────┴─────────────┴───────────────┴────────────────────┴────────────┘
 ```
+
+## Todo
+
+-   [x] Retrieve payment information
+-   [-] Create checkout
+    -   [] Create embedded checkout
+    -   [x] Create hosted checkout
+-   [-] Create subscriptions
+    -   [x] Create scheduled subscriptions
+    -   [] Create unscheduled subscriptions
+-   [] Webhooks
+-   [] Cancel payments
+-   [] Charge payments
+    -   [] Single one-off charges
+    -   [] Bulk subscription charges
+    -   [] Single subscription charges
+-   [] Refund payments
+-   [] Verify subscriptions
+-   [] Retrieve bulk
+-   [] Reconciliate payments
