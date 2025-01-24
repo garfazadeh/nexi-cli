@@ -63,64 +63,62 @@ async function processList(paymentIds, options) {
 	const setDelay = (1000 / process.env.REQUEST_PER_SECOND)
 	for (let i = 0; i < paymentIds.length; i++) {
 		await delay(setDelay);
-		retrievePayment(paymentIds[i], options)
-			.then(response => {
-				responses.push(response.data);
-				updateLoader(i + 1, paymentIds.length, "Fetching payments");
-			});
+		const response = await retrievePayment(paymentIds[i], options)
+		responses.push(response.data);
+		updateLoader(i + 1, paymentIds.length, "Fetching payments");
 	}
 	return responses;
 }
 
-export default function runFetchPayment(options) {
+export default async function runFetchPayment(options) {
 	if (options.file) {
 		// read file containing payment ID
 		const fileContent = readFileSync(options.file, 'utf8');
 		const paymentIds = fileContent.split('\n').map(line => line.trim());
 
 		// process list of payment ID
-		processList(paymentIds, options)
-			.then(responses => {
-				// format the response object to a flat structure
-				const formattedContent = responses.map((response) => {
-					const { payment } = response;
-					const { orderDetails, paymentDetails, summary } = payment;
+		const responses = await processList(paymentIds, options)
 
-					const formatAmount = (amount) =>
-						amount && amount !== 0 ? (amount / 100).toFixed(2) : 0;
+		// format the response object to a flat structure
+		const formattedContent = await responses.map((response) => {
+			const { payment } = response;
+			const { orderDetails, paymentDetails, summary } = payment;
 
-					return {
-						created: payment.created,
-						paymentId: payment.paymentId,
-						reference: orderDetails.reference,
-						currency: orderDetails.currency,
-						paymentType: paymentDetails.paymentType || '',
-						paymentMethod: paymentDetails.paymentMethod || '',
-						reservedAmount: formatAmount(summary.reservedAmount) || '',
-						chargedAmount: formatAmount(summary.chargedAmount) || '',
-						refundedAmount: formatAmount(summary.refundedAmount) || '',
-						cancelledAmount: formatAmount(summary.cancelledAmount) || '',
-					};
-				});
-				console.log('\n')
-				console.table(formattedContent);
+			const formatAmount = (amount) =>
+				amount && amount !== 0 ? (amount / 100).toFixed(2) : 0;
 
-				// create fields for csv file
-				const fields = [
-					{ label: 'Created', value: 'created' },
-					{ label: 'Payment ID', value: 'paymentId' },
-					{ label: 'Reference', value: 'reference' },
-					{ label: 'Currency', value: 'currency' },
-					{ label: 'Payment Type', value: 'paymentType' },
-					{ label: 'Payment Method', value: 'paymentMethod' },
-					{ label: 'Reserved Amount', value: 'reservedAmount' },
-					{ label: 'Charged Amount', value: 'chargedAmount' },
-					{ label: 'Refunded Amount', value: 'refundedAmount' },
-					{ label: 'Cancelled Amount', value: 'cancelledAmount' },
-				];
+			return {
+				created: payment.created,
+				paymentId: payment.paymentId,
+				reference: orderDetails.reference,
+				currency: orderDetails.currency,
+				paymentType: paymentDetails.paymentType || '',
+				paymentMethod: paymentDetails.paymentMethod || '',
+				reservedAmount: formatAmount(summary.reservedAmount) || '',
+				chargedAmount: formatAmount(summary.chargedAmount) || '',
+				refundedAmount: formatAmount(summary.refundedAmount) || '',
+				cancelledAmount: formatAmount(summary.cancelledAmount) || '',
+			};
+		});
+		console.log('\n')
+		console.table(formattedContent);
 
-				if (options.save) { writeCsv('responses.csv', formattedContent, fields) }
-			})
+		// create fields for csv file
+		const fields = [
+			{ label: 'Created', value: 'created' },
+			{ label: 'Payment ID', value: 'paymentId' },
+			{ label: 'Reference', value: 'reference' },
+			{ label: 'Currency', value: 'currency' },
+			{ label: 'Payment Type', value: 'paymentType' },
+			{ label: 'Payment Method', value: 'paymentMethod' },
+			{ label: 'Reserved Amount', value: 'reservedAmount' },
+			{ label: 'Charged Amount', value: 'chargedAmount' },
+			{ label: 'Refunded Amount', value: 'refundedAmount' },
+			{ label: 'Cancelled Amount', value: 'cancelledAmount' },
+		];
+
+		if (options.save) { writeCsv('responses.csv', formattedContent, fields) }
+
 	}
 	if (options.pid) {
 		retrievePayment(options.pid, options)

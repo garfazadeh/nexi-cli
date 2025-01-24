@@ -20,9 +20,8 @@ program
 	.option('--prod-secret-key <key>', 'Your production secret API key')
 	.option('--test-secret-key <key>', 'Your test secret API key')
 	.option('-p, --production', 'Use production environment', process.env.IS_TEST === "false")
-	.option('-s, --save', 'Save table to CSV-file', process.env.SAVE_TO_CSV)
+	.option('-s, --save', 'Save table to CSV-file', process.env.SAVE_TO_CSV === "true")
 	.action((options) => {
-		console.log(options)
 		options.prodSecretKey = process.env.PROD_SECRET_KEY || options.prodSecretKey
 		options.testSecretKey = process.env.TEST_SECRET_KEY || options.testSecretKey
 		options.production = process.env.IS_TEST === "false" || options.production
