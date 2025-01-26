@@ -41,7 +41,7 @@ $ npm link
 To view all top-level Nexi CLI commands, enter `nexi-cli` without arguments.
 
 ```zsh
-$ nexi-cli
+➜  ~ nexi-cli --help
 Usage: nexi-cli [options] [command]
 
 Nexi Checkout CLI
@@ -53,16 +53,17 @@ Options:
 
 Commands:
   fetch-payment [options] [paymentId]           Fetch payment information individually or in bulk
-  create-checkout [options]                     Create a checkout URL
-  create-completed-checkout [options] [number]  Create completed checkout in test
-  create-subscriptions [options]                Create subscriptions in test
+  create-payload [options]                      Returns a payload for a create payment request
+  create-checkout [options]                     Create a embedded checkout or URL
+  create-completed-checkout [options] [number]  Create completed checkout in test environment
+  create-subscriptions [options] [number]       Create subscriptions in test environment
   help [command]                                display help for command
 ```
 
 ### fetch-payment
 
 ```zsh
-$ nexi-cli fetch-payment -h
+➜  ~ nexi-cli fetch-payment --help
 Usage: nexi-cli fetch-payment [options] [paymentId]
 
 Fetch payment information individually or in bulk
@@ -79,69 +80,111 @@ Options:
   -h, --help               display help for command
 ```
 
+### create-payload
+
+```zsh
+➜  ~ nexi-cli create-payload --help
+Usage: nexi-cli create-payload [options]
+
+Returns a payload for a create payment request
+
+Options:
+  -c, --currency <code>       Set checkout currency (default: "SEK")
+  -h, --hosted                Hosted mode provides checkout link
+  -m, --mhcd                  Hides address fields in checkout (default: true)
+  --no-mhcd                   Displays address fields in checkout
+  --consumer                  Automatically adds consumer object (default: true)
+  --no-consumer               Automatically removes consumer object
+  --consumer-locale <locale>  Set consumer locale (default: "sv")
+  --consumer-type <type>      Set consumer type (default: "B2C")
+  --charge                    Charge payment automatically if reserved (default: true)
+  --help                      display help for command
+```
+
 ### create-checkout
 
 ```zsh
-$ nexi-cli create-checkout -h
+➜  ~ nexi-cli create-checkout --help
 Usage: nexi-cli create-checkout [options]
 
-Create a checkout URL
+Create a embedded checkout or URL
 
 Options:
-  -c, --currency <string>     Set checkout currency (default: "SEK")
-  -l, locale <string>         Set consumer locale (default: "sv")
+  -c, --currency <code>       Set checkout currency (default: "SEK")
+  -h, --hosted                Hosted mode provides checkout link
+  -m, --mhcd                  Hides address fields in checkout (default: true)
+  --no-mhcd                   Displays address fields in checkout
+  --consumer                  Automatically adds consumer object (default: true)
+  --no-consumer               Automatically removes consumer object
+  --consumer-locale <locale>  Set consumer locale (default: "sv")
+  --consumer-type <type>      Set consumer type (default: "B2C")
+  --charge                    Charge payment automatically if reserved (default: true)
   --lang <string>             Set checkout language (default: "sv-SE")
-  --charge                    Charge payment automatically if reserved (default: false)
   --prod-secret-key <string>  Your production secret API key
   --test-secret-key <string>  Your test secret API key
   -p, --production            Use production environment (default: false)
-  -h, --help                  display help for command
+  --help                      display help for command
 ```
 
 ### create-completed-checkout
 
 ```zsh
-$ nexi-cli create-completed-checkout -h
+➜  ~ nexi-cli create-completed-checkout --help
 Usage: nexi-cli create-completed-checkout [options] [number]
 
-Create completed checkout in test
+Create completed checkout in test environment
 
 Arguments:
-  number                   Number of checkouts
+  number                      Number of checkouts
 
 Options:
-  -c, --currency <string>  Set currency (default: "SEK")
-  -l, locale <string>      Set consumer locale (default: "sv")
-  --charge                 Charge payment automatically if reserved (default: false)
-  --test-secret-key <key>  Your test secret API key
-  -s, --save               Save table to CSV-file (default: false)
-  -h, --help               display help for command
+  -c, --currency <code>       Set checkout currency (default: "SEK")
+  -h, --hosted                Hosted mode provides checkout link
+  -m, --mhcd                  Hides address fields in checkout (default: true)
+  --no-mhcd                   Displays address fields in checkout
+  --consumer                  Automatically adds consumer object (default: true)
+  --no-consumer               Automatically removes consumer object
+  --consumer-locale <locale>  Set consumer locale (default: "sv")
+  --consumer-type <type>      Set consumer type (default: "B2C")
+  --charge                    Charge payment automatically if reserved (default: true)
+  --test-secret-key <key>     Your test secret API key
+  -s, --save                  Save table to CSV-file (default: false)
+  --help                      display help for command
 ```
 
 ### create-subscriptions
 
 ```zsh
-nexi-cli create-subscriptions -h
+➜  ~ nexi-cli create-subscriptions --help
 Usage: nexi-cli create-subscriptions [options] [number]
 
-Create subscriptions in test
+Create subscriptions in test environment
 
 Arguments:
-  number                     Number of checkouts
+  number                      Number of checkouts
 
 Options:
-  -u, --unscheduled          Create unscheduled subscription
-  -c, --currency <currency>  Set subscription currency (default: "SEK")
-  -l, locale <locale>        Set consumer locale (default: "sv")
-  --test-secret-key <key>    Your test secret API key
-  -s, --save                 Save table to CSV-file (default: false)
-  -h, --help                 display help for command
+  -u, --unscheduled           Create unscheduled subscription
+  --scheduled                 Create scheduled subscription
+  -c, --currency <code>       Set checkout currency (default: "SEK")
+  -h, --hosted                Hosted mode provides checkout link
+  -m, --mhcd                  Hides address fields in checkout (default: true)
+  --no-mhcd                   Displays address fields in checkout
+  --consumer                  Automatically adds consumer object (default: true)
+  --no-consumer               Automatically removes consumer object
+  --consumer-locale <locale>  Set consumer locale (default: "sv")
+  --consumer-type <type>      Set consumer type (default: "B2C")
+  --charge                    Charge payment automatically if reserved (default: true)
+  --lang <string>             Set checkout language (default: "sv-SE")
+  --test-secret-key <key>     Your test secret API key
+  -s, --save                  Save table to CSV-file (default: false)
+  --help                      display help for command
 ```
 
 ## Examples
 
 ```zsh
-nexi-cli fetch-payment 53b84252bde14ba48759e6d30ce9ecf5
+➜  ~ nexi-cli fetch-payment 53b84252bde14ba48759e6d30ce9ecf5
 {
   payment: {
     paymentId: '53b84252bde14ba48759e6d30ce9ecf5',
@@ -197,11 +240,9 @@ nexi-cli fetch-payment 53b84252bde14ba48759e6d30ce9ecf5
             taxAmount: 0,
             grossTotalAmount: 17769,
             netTotalAmount: 17769
-          },
-          [length]: 1
+          }
         ]
-      },
-      [length]: 1
+      }
     ]
   }
 }
@@ -228,11 +269,140 @@ Fetching payments: ████████████████████�
 ```
 
 ```zsh
-$ nexi-cli create-checkout --lang=en-GB
-Payment ID:
-9a8e571c8e024f0da5f7c3ec221ed6db
-URL:
-https://test.checkout.dibspayment.eu/hostedpaymentpage/?checkoutKey=e8ec1ad7898343caa92126b7691224cc&pid=9a8e571c8e024f0da5f7c3ec221ed6db&language=en-GB
+➜  ~ nexi-cli create-checkout --consumer --charge
+Sent payload:
+{
+  order: {
+    items: [
+      {
+        reference: 'incredible-bamboo-gloves',
+        name: 'Incredible Bamboo Gloves',
+        quantity: 2,
+        unit: 'pcs',
+        unitPrice: '99358',
+        taxRate: 0,
+        taxAmount: 0,
+        netTotalAmount: 198716,
+        grossTotalAmount: 198716
+      },
+      {
+        reference: 'handcrafted-granite-shirt',
+        name: 'Handcrafted Granite Shirt',
+        quantity: 5,
+        unit: 'pcs',
+        unitPrice: '69504',
+        taxRate: 0,
+        taxAmount: 0,
+        netTotalAmount: 347520,
+        grossTotalAmount: 347520
+      }
+    ],
+    amount: 546236,
+    currency: 'SEK',
+    reference: '#E5BBFFE3'
+  },
+  checkout: {
+    termsUrl: 'http://localhost:3000/terms',
+    integrationType: 'EmbeddedCheckout',
+    merchantHandlesConsumerData: true,
+    url: 'http://localhost:3000',
+    charge: true,
+    consumer: {
+      reference: 'GPmoEmbwdD',
+      email: 'jan_bergman@yahoo.com',
+      shippingAddress: {
+        addressLine1: 'Fabriksgränden 4',
+        postalCode: '66925',
+        city: 'Kristvik',
+        country: 'SWE'
+      },
+      phoneNumber: { prefix: '+46', number: '8429879' },
+      privatePerson: { firstName: 'Jan', lastName: 'Bergman' }
+    }
+  }
+}
+
+Received Payment ID: 0c125a9c793e4aa39eb4746b57f9b841
+
+Checkout accessible on http://localhost:3000
+{ event: 'iframe-loaded' }
+{ event: 'pay-initialized' }
+{ event: 'payment-order-finalized', value: true }
+{ event: 'payment-completed' }
+
+Fetching payment:
+{
+  payment: {
+    paymentId: '0c125a9c793e4aa39eb4746b57f9b841',
+    summary: { chargedAmount: 546236 },
+    consumer: {
+      shippingAddress: {
+        addressLine1: 'Fabriksgränden 4',
+        receiverLine: 'Jan Bergman',
+        postalCode: '66925',
+        city: 'Kristvik',
+        country: 'SWE',
+        phoneNumber: { prefix: '+46', number: '8429879' }
+      },
+      company: { contactDetails: { phoneNumber: {} } },
+      privatePerson: {
+        merchantReference: 'GPmoEmbwdD',
+        firstName: 'Jan',
+        lastName: 'Bergman',
+        email: 'jan_bergman@yahoo.com',
+        phoneNumber: { prefix: '+46', number: '8429879' }
+      },
+      billingAddress: {
+        addressLine1: 'Fabriksgränden 4',
+        receiverLine: 'Jan Bergman',
+        postalCode: '66925',
+        city: 'Kristvik',
+        country: 'SWE',
+        phoneNumber: { prefix: '+46', number: '8429879' }
+      }
+    },
+    paymentDetails: {
+      paymentType: 'A2A',
+      paymentMethod: 'Swish',
+      invoiceDetails: {},
+      cardDetails: {}
+    },
+    orderDetails: { amount: 546236, currency: 'SEK', reference: '#E5BBFFE3' },
+    checkout: { url: 'http://localhost:3000' },
+    created: '2025-01-26T23:28:24.8214+00:00',
+    charges: [
+      {
+        chargeId: 'a72ee4af99d54fcb8a797741fcde64f4',
+        amount: 546236,
+        created: '2025-01-26T23:28:29.4202+00:00',
+        orderItems: [
+          {
+            reference: 'incredible-bamboo-gloves',
+            name: 'Incredible Bamboo Gloves',
+            quantity: 2,
+            unit: 'pcs',
+            unitPrice: 99358,
+            taxRate: 0,
+            taxAmount: 0,
+            grossTotalAmount: 198716,
+            netTotalAmount: 198716
+          },
+          {
+            reference: 'handcrafted-granite-shirt',
+            name: 'Handcrafted Granite Shirt',
+            quantity: 5,
+            unit: 'pcs',
+            unitPrice: 69504,
+            taxRate: 0,
+            taxAmount: 0,
+            grossTotalAmount: 347520,
+            netTotalAmount: 347520
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
 
 ```zsh
@@ -271,8 +441,8 @@ Creating subscriptions: ██████████████████�
 ## Todo
 
 - [x] Retrieve payment information
-- [ ] Create checkout
-    - [ ] Create embedded checkout
+- [x] Create checkout
+    - [x] Create embedded checkout
     - [x] Create hosted checkout
 - [x] Create reservations
 - [x] Create subscriptions

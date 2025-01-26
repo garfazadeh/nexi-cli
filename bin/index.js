@@ -22,6 +22,29 @@ program
     .version('0.9.1');
 
 program
+    .command('fetch-payment')
+    .argument('[paymentId]', 'Payment ID')
+    .description('Fetch payment information individually or in bulk')
+    .option('-f, --file <path>', 'Path to file containing list of payment ID')
+    .option('--prod-secret-key <key>', 'Your production secret API key')
+    .option('--test-secret-key <key>', 'Your test secret API key')
+    .option('-p, --production', 'Use production environment', !config.isTest)
+    .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
+    .action((arg, options) => {
+        if (!arg && !options.file) {
+            console.error(
+                'Error: Either the argument or the file option must be set.'
+            );
+            process.exit(1);
+        }
+        options.prodSecretKey = config.prodSecretKey || options.prodSecretKey;
+        options.testSecretKey = config.testSecretKey || options.testSecretKey;
+        options.production = !config.isTest || options.production;
+        options.save = config.saveToCSV || options.save;
+        runFetchPayment(options, arg);
+    });
+
+program
     .command('create-payload')
     .description('Returns a payload for a create payment request')
     .option(
@@ -59,29 +82,6 @@ program
     )
     .action(options => {
         runCreatePayload(options);
-    });
-
-program
-    .command('fetch-payment')
-    .argument('[paymentId]', 'Payment ID')
-    .description('Fetch payment information individually or in bulk')
-    .option('-f, --file <path>', 'Path to file containing list of payment ID')
-    .option('--prod-secret-key <key>', 'Your production secret API key')
-    .option('--test-secret-key <key>', 'Your test secret API key')
-    .option('-p, --production', 'Use production environment', !config.isTest)
-    .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
-    .action((arg, options) => {
-        if (!arg && !options.file) {
-            console.error(
-                'Error: Either the argument or the file option must be set.'
-            );
-            process.exit(1);
-        }
-        options.prodSecretKey = config.prodSecretKey || options.prodSecretKey;
-        options.testSecretKey = config.testSecretKey || options.testSecretKey;
-        options.production = !config.isTest || options.production;
-        options.save = config.saveToCSV || options.save;
-        runFetchPayment(options, arg);
     });
 
 program
