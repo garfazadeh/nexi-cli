@@ -1,39 +1,11 @@
-import { createPayment, retrievePayment } from '../nexi-api/payment-api.js';
-import finalizeCheckout from '../utils/finalize-checkout.js';
+import { createPayment, retrievePayment } from '../nexi-api/payment.js';
+import configPromise from '../utils/config.js';
+import finalizeCheckout from '../utils/finalizeCheckout.js';
+import generatePayload from '../utils/generatePayload.js';
 import updateLoader from '../utils/loader.js';
-import preparePaymentRequest from '../utils/prepare-payment-request.js';
-import writeCsv from '../utils/write-csv.js';
+import writeCsv from '../utils/writeCsv.js';
 
-const payload = {
-    order: {
-        items: [
-            {
-                reference: 'subscription',
-                name: 'Subscription',
-                quantity: 1,
-                unit: 'pcs',
-                unitPrice: 0,
-                taxRate: 0,
-                taxAmount: 0,
-                netTotalAmount: 0,
-                grossTotalAmount: 0,
-            },
-        ],
-        amount: 0,
-        currency: 'SEK',
-        reference: 'subscription',
-    },
-    checkout: {
-        termsUrl: 'https://shop.easy.nets.eu/terms',
-        integrationType: 'EmbeddedCheckout',
-        merchantHandlesConsumerData: true,
-        url: 'https://shop.easy.nets.eu/checkout',
-    },
-    subscription: {
-        endDate: '2099-12-31T23:59:59.999Z',
-        interval: 0,
-    },
-};
+const config = await configPromise;
 
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -42,13 +14,11 @@ function delay(ms) {
 export default async function runCreateSubscriptions(options, arg) {
     // create array for responses
     const responses = [];
-    const setDelay = 1000 / process.env.REQUEST_PER_SECOND;
+    const setDelay = 1000 / config.requestLimit;
 
     if (!arg) {
         arg = 1;
     }
-
-    const subscription = options.unscheduled ? 2 : 1;
 
     // initialize loader
     updateLoader(0, arg, 'Creating subscriptions');
@@ -56,11 +26,7 @@ export default async function runCreateSubscriptions(options, arg) {
         try {
             // create payment request
 
-            const payload = preparePaymentRequest(
-                options.currency,
-                options.charge,
-                subscription
-            );
+            const payload = generatePayload(options);
 
             // create payment
             const createdPayment = await createPayment(payload, options);

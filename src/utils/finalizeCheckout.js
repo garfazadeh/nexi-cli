@@ -1,4 +1,4 @@
-import { checkoutPay, pares } from '../nexi-api/checkout-api.js';
+import { checkoutPay, pares } from '../nexi-api/checkout.js';
 
 const testCardNumber = [
     '4268270087374847',

@@ -2,9 +2,12 @@ import Ajv from 'ajv';
 import { readFileSync } from 'fs';
 import util from 'node:util';
 
-import { retrievePayment } from '../nexi-api/payment-api.js';
+import { retrievePayment } from '../nexi-api/payment.js';
+import configPromise from '../utils/config.js';
 import updateLoader from '../utils/loader.js';
-import writeCsv from '../utils/write-csv.js';
+import writeCsv from '../utils/writeCsv.js';
+
+const config = await configPromise;
 
 function validateInput(input) {
     const inputSchema = { type: 'string', pattern: '^[a-fA-F0-9]{32}$' };
@@ -42,7 +45,7 @@ export default async function runFetchPayment(options, arg) {
         validateInput(paymentIds);
 
         const responses = [];
-        const setDelay = 1000 / process.env.REQUEST_PER_SECOND;
+        const setDelay = 1000 / config.requestLimit;
         for (let i = 0; i < paymentIds.length; i++) {
             try {
                 const response = await retrievePayment(paymentIds[i], options);
@@ -96,9 +99,9 @@ export default async function runFetchPayment(options, arg) {
             const response = await retrievePayment(arg, options);
             console.log(
                 util.inspect(response.data, {
-                    showHidden: true,
                     depth: null,
                     colors: true,
+                    maxArrayLength: null,
                 })
             );
         } catch {

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Payment Example</title>
+    </head>
+    <body>
+        <div id="iframe-container"></div>
+        <script>
+            // creating object to store checkout in
+            let checkout = null;
+            document.addEventListener('DOMContentLoaded', () => {
+                // Your code to initiate the request
+                if (checkout) {
+                    // delete listeners
+                    checkout.cleanup();
+                    fetch('event', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            event: 'checkout.cleanup()',
+                        }),
+                    });
+                    // removes the iframe from the container
+                    const iframeContainer =
+                        document.getElementById('iframe-container');
+                    while (iframeContainer.firstChild) {
+                        iframeContainer.removeChild(iframeContainer.firstChild);
+                    }
+                }
+                fetch('/data', { method: 'GET' })
+                    .then(response => response.json())
+                    .then(config => {
+                        const checkoutOptions = {
+                            checkoutKey: config.checkoutKey,
+                            paymentId: config.paymentId,
+                            language: config.language,
+                            containerId: 'iframe-container',
+                        };
+                        checkout = new Dibs.Checkout(checkoutOptions);
+                        const iframe = document.getElementById(
+                            'nets-checkout-iframe'
+                        );
+
+                        // publish event message when iframe has loaded
+                        iframe.addEventListener('load', () => {
+                            fetch('event', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    event: 'iframe-loaded',
+                                }),
+                            });
+                        });
+                        checkout.on('address-changed', function (address) {
+                            fetch('event', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    event: 'address-changes',
+                                    value: address,
+                                }),
+                            });
+                        });
+                        checkout.on('pay-initialized', function (paymentId) {
+                            fetch('event', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    event: 'pay-initialized',
+                                }),
+                            });
+                            checkout.send('payment-order-finalized', true);
+                            fetch('event', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    event: 'payment-order-finalized',
+                                    value: true,
+                                }),
+                            });
+                        });
+                        checkout.on('payment-completed', function (response) {
+                            console.log('payment-completed raised');
+                            fetch('event', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    event: 'payment-completed',
+                                }),
+                            });
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        </script>
+        <script src="https://test.checkout.dibspayment.eu/v1/checkout.js?v=1"></script>
+    </body>
+</html>

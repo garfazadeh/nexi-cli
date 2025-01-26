@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+import configPromise from '../utils/config.js';
+
+const config = await configPromise;
+
 const checkoutUrl = 'https://test.checkout.dibspayment.eu';
 
 export async function checkoutPay(
@@ -34,7 +38,7 @@ export async function checkoutPay(
                 headers: {
                     'Content-Type': 'application/json',
                     paymentId: paymentId,
-                    CheckoutKey: process.env.PARES_CHECKOUT_KEY,
+                    CheckoutKey: config.paresCheckoutKey,
                 },
             }
         );
@@ -79,9 +83,9 @@ export async function pares(paymentId, ThreedsSessionId) {
             {
                 headers: {
                     paymentId: paymentId,
-                    CheckoutKey: process.env.PARES_CHECKOUT_KEY,
+                    CheckoutKey: config.paresCheckoutKey,
                     'Content-Type': 'application/json',
-                    'x-api-key': process.env.X_API_KEY,
+                    'x-api-key': config.xApiKey,
                 },
             }
         );

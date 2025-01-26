@@ -14,6 +14,7 @@ export async function retrievePayment(paymentId, options) {
         const response = await axios.get(url, {
             headers: {
                 Authorization: key,
+                CommercePlatformTag: 'nexi-cli',
             },
             timeout: 5000,
         });
@@ -42,6 +43,7 @@ export async function createPayment(payload, options) {
         const response = await axios.post(url, payload, {
             headers: {
                 Authorization: key,
+                CommercePlatformTag: 'nexi-cli',
             },
             timeout: 5000,
         });

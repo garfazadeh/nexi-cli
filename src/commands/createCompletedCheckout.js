@@ -1,8 +1,11 @@
-import { createPayment, retrievePayment } from '../nexi-api/payment-api.js';
-import finalizeCheckout from '../utils/finalize-checkout.js';
+import { createPayment, retrievePayment } from '../nexi-api/payment.js';
+import configPromise from '../utils/config.js';
+import finalizeCheckout from '../utils/finalizeCheckout.js';
+import generatePayload from '../utils/generatePayload.js';
 import updateLoader from '../utils/loader.js';
-import preparePaymentRequest from '../utils/prepare-payment-request.js';
-import writeCsv from '../utils/write-csv.js';
+import writeCsv from '../utils/writeCsv.js';
+
+const config = await configPromise;
 
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -11,7 +14,7 @@ function delay(ms) {
 export default async function runCreateCompletedCheckout(options, arg) {
     // create array for responses
     const responses = [];
-    const setDelay = 1000 / process.env.REQUEST_PER_SECOND;
+    const setDelay = 1000 / config.requestLimit;
 
     if (!arg) {
         arg = 1;
@@ -22,10 +25,7 @@ export default async function runCreateCompletedCheckout(options, arg) {
     for (let i = 0; i < arg; i++) {
         try {
             // create payment request
-            const payload = preparePaymentRequest(
-                options.currency,
-                options.charge
-            );
+            const payload = generatePayload(options);
 
             // create payment
             const createdPayment = await createPayment(payload, options);
