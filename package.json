@@ -1,24 +1,32 @@
 {
-  "name": "nexi-cli",
-  "version": "0.9.0",
-  "type": "module",
-  "description": "",
-  "bin": {
-    "nexi-cli": "./bin/index.js"
-  },
-  "main": "./bin/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "ajv": "^8.17.1",
-    "axios": "^1.7.9",
-    "chalk": "^5.4.1",
-    "commander": "^13.0.0",
-    "dotenv": "^16.4.7",
-    "json2csv": "^6.0.0-alpha.2"
-  }
+    "name": "nexi-cli",
+    "version": "0.9.0",
+    "type": "module",
+    "description": "",
+    "bin": {
+        "nexi-cli": "./bin/index.js"
+    },
+    "main": "./bin/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "ajv": "^8.17.1",
+        "axios": "^1.7.9",
+        "chalk": "^5.4.1",
+        "commander": "^13.0.0",
+        "dotenv": "^16.4.7",
+        "json2csv": "^6.0.0-alpha.2",
+        "terminal-columns": "^1.4.1"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.19.0",
+        "@faker-js/faker": "^9.4.0",
+        "@trivago/prettier-plugin-sort-imports": "^5.2.1",
+        "globals": "^15.14.0",
+        "prettier": "^3.4.2"
+    }
 }
