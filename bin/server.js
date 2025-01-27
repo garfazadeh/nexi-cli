@@ -1,10 +1,31 @@
 import chalk from 'chalk';
 import express from 'express';
+import localtunnel from 'localtunnel';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 
+import configPromise from '../src/utils/config.js';
+
+const config = await configPromise;
+
 const app = express();
-const port = 3000;
+const port = config.port;
+
+(async () => {
+    const tunnel = await localtunnel({ port: port });
+
+    // the assigned public url for your tunnel
+    // i.e. https://abcdefgjhij.localtunnel.me
+    console.log(tunnel.url);
+
+    tunnel.on('request', info => {
+        console.log('Request info:', info);
+    });
+
+    tunnel.on('close', () => {
+        // tunnels are closed
+    });
+})();
 
 // Convert __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -38,9 +59,15 @@ app.post('/event', (req, res) => {
     res.send('Data received');
 });
 
+// GET endpoint to retrieve data
+app.get('/webhook', (req, res) => {
+    console.log('webhook received');
+    res.status(200).send('Webhook received');
+});
+
 app.listen(port, () => {
     console.log(
-        chalk.green.bold('\nCheckout accessible on http://localhost:3000')
+        chalk.green.bold(`\nCheckout accessible on http://localhost:${port}`)
     );
     if (process.send) {
         process.send('server-started');

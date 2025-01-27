@@ -54,7 +54,7 @@ export default async function runCreateCheckout(options) {
         serverProcess.on('message', async message => {
             if (message === 'server-started') {
                 // Send requests to the server
-                const url = 'http://localhost:3000/data';
+                const url = `http://localhost:${config.port}/data`;
 
                 const postData = {
                     checkoutKey: config.testCheckoutKey,
