@@ -1,5 +1,9 @@
 import { Faker, faker, sv } from '@faker-js/faker';
 
+import configPromise from './config.js';
+
+const config = await configPromise;
+
 const generateSwedishPhoneNumber = () => {
     const phoneFormats = [
         '020######',
@@ -107,12 +111,12 @@ export default function generatePayload(options) {
                 .toUpperCase(),
         },
         checkout: {
-            termsUrl: 'http://localhost:3000/terms',
+            termsUrl: `http://localhost:${config.port}/terms`,
             integrationType: options.hosted
                 ? 'HostedPaymentPage'
                 : 'EmbeddedCheckout',
             merchantHandlesConsumerData: options.mhcd,
-            url: 'http://localhost:3000',
+            url: `http://localhost:${config.port}`,
             charge,
         },
     };

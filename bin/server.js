@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import express from 'express';
-import localtunnel from 'localtunnel';
+import util from 'node:util';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -10,22 +10,6 @@ const config = await configPromise;
 
 const app = express();
 const port = config.port;
-
-(async () => {
-    const tunnel = await localtunnel({ port: port });
-
-    // the assigned public url for your tunnel
-    // i.e. https://abcdefgjhij.localtunnel.me
-    console.log(tunnel.url);
-
-    tunnel.on('request', info => {
-        console.log('Request info:', info);
-    });
-
-    tunnel.on('close', () => {
-        // tunnels are closed
-    });
-})();
 
 // Convert __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -52,16 +36,23 @@ app.get('/data', (req, res) => {
 
 // POST endpoint to save data
 app.post('/event', (req, res) => {
+    console.log(chalk.bold.green('\nCheckout JS SDK event received:'));
     console.log(req.body);
-    if (req.body.event === 'payment-completed') {
-        process.send('payment-completed');
-    }
     res.send('Data received');
 });
 
 // GET endpoint to retrieve data
-app.get('/webhook', (req, res) => {
-    console.log('webhook received');
+app.post('/webhook', (req, res) => {
+    console.log(
+        chalk.bold.green(`\nWebhook event ${req.body.event} received:`)
+    );
+    console.log(
+        util.inspect(req.body, {
+            depth: null,
+            colors: true,
+            maxArrayLength: null,
+        })
+    );
     res.status(200).send('Webhook received');
 });
 

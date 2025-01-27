@@ -1,6 +1,7 @@
 import axios from 'axios';
 import chalk from 'chalk';
 import { fork } from 'child_process';
+import localtunnel from 'localtunnel';
 import util from 'node:util';
 import { resolve } from 'path';
 
@@ -17,15 +18,90 @@ const serverPath = resolve(
 );
 
 export default async function runCreateCheckout(options) {
+    // create tunnel to receive webhooks
+    const tunnel = await localtunnel({ port: config.port });
+
     let payload = generatePayload(options);
-    log(chalk.green.bold('Sent payload:'));
-    log(
-        util.inspect(payload, {
-            depth: null,
-            colors: true,
-            maxArrayLength: null,
-        })
-    );
+    payload.notifications = {
+        webHooks: [
+            {
+                eventName: 'payment.cancel.failed',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.cancel.created',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.charge.created',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.charge.created.v2',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.charge.failed',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.charge.failed.v2',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.created',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.refund.completed',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.refund.failed',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.refund.initiated',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.reservation.created',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.reservation.created.v2',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+            {
+                eventName: 'payment.reservation.failed',
+                url: tunnel.url + '/webhook',
+                authorization: 'abcdef1234567890',
+            },
+        ],
+    };
+    if (!options.hosted) {
+        log(chalk.green.bold('Sent payload:'));
+        log(
+            util.inspect(payload, {
+                depth: null,
+                colors: true,
+                maxArrayLength: null,
+            })
+        );
+    }
+
     if (options.hosted) {
         payload.checkout = {
             ...payload.checkout,
