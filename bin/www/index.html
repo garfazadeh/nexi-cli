@@ -4,71 +4,214 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>nexi-cli</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            'bg-gray-900': '#ff0000', // Override primary color
-                            secondary: '#00ff00', // Override secondary color
-                        },
-                    },
-                },
-            };
-        </script>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+            integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <style>
+            /* Add this CSS to your stylesheet */
+            .copy-button {
+                width: 80px; /* Set a fixed width */
+                height: 40px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        </style>
     </head>
-    <body class="bg-white dark:bg-gray-800 dark:text-white">
-        <div class="grid grid-cols-1 md:grid-cols-[300px_1fr] h-screen">
+    <body>
+        <div class="columns">
             <!-- Left Column -->
-            <div class="flex items-start">
-                <div class="grid grid-cols-1 p-4 pr-0 w-full">
-                    <h1 class="ps-15 text-2xl mb-6">Test Cards</h1>
-                    <ul class="grid gap-4 justify-center">
+            <div class="column is-narrow">
+                <div class="column">
+                    <p class="title is-5">Test Cards</p>
+                    <ul>
                         <!-- Example Credit Card Numbers -->
-                        <li class="flex w-auto gap-2 items-stretch items-center">
-                            <input
-                                class="font-mono text-center disabled:border-green-500 bg-green-100 border rounded-md select-none"
-                                placeholder="4268 2700 8737 4847"
-                            />
-
-                            <button
-                                onclick="copyToClipboard('4268270087374847')"
-                                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                            >
-                                Copy
-                            </button>
+                        <li>
+                            <div class="columns is-mobile is-vcentered">
+                                <div class="column is-narrow">
+                                    <p class="control has-icons-left">
+                                        <input
+                                            class="input is-primary readonly"
+                                            placeholder="4268 2700 8737 4847"
+                                            readonly
+                                        />
+                                        <span class="icon is-small is-left">
+                                            <i class="fa-brands fa-cc-visa"></i>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="column is-narrow">
+                                    <button
+                                        onclick="copyToClipboard('4268270087374847', this)"
+                                        class="button copy-button"
+                                    >
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
                         </li>
-                        <li class="flex w-auto gap-2 items-stretch items-center">
-                            <input
-                                class="font-mono text-center disabled:border-green-500 bg-green-100 border rounded-md select-none"
-                                placeholder="4925 0000 0000 0087"
-                            />
-                            <button
-                                onclick="copyToClipboard('4925000000000087')"
-                                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                            >
-                                Copy
-                            </button>
+                        <li>
+                            <div class="columns is-mobile is-vcentered">
+                                <div class="column is-narrow">
+                                    <p class="control has-icons-left">
+                                        <input
+                                            class="input is-warning readonly"
+                                            placeholder="4925 0000 0000 0061"
+                                            readonly
+                                        />
+                                        <span class="icon is-small is-left">
+                                            <i class="fa-brands fa-cc-visa"></i>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="column is-narrow">
+                                    <button
+                                        onclick="copyToClipboard('4925000000000061', this)"
+                                        class="button copy-button"
+                                    >
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
                         </li>
-                        <li class="flex w-auto gap-2 items-stretch items-center">
-                            <input
-                                class="font-mono text-center disabled:border-green-500 bg-green-100 border rounded-md select-none"
-                                placeholder="4925 0000 0000 0079"
-                            />
-                            <button
-                                onclick="copyToClipboard('4925000000000079')"
-                                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                            >
-                                Copy
-                            </button>
+                        <li>
+                            <div class="columns is-mobile is-vcentered">
+                                <div class="column is-narrow">
+                                    <p class="control has-icons-left">
+                                        <input
+                                            class="input is-warning readonly"
+                                            placeholder="4925 0000 0000 0079"
+                                            readonly
+                                        />
+                                        <span class="icon is-small is-left">
+                                            <i class="fa-brands fa-cc-visa"></i>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="column is-narrow">
+                                    <button
+                                        onclick="copyToClipboard('4925000000000079', this)"
+                                        class="button copy-button"
+                                    >
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="columns is-mobile is-vcentered">
+                                <div class="column is-narrow">
+                                    <p class="control has-icons-left">
+                                        <input
+                                            class="input is-danger readonly"
+                                            placeholder="4925 0000 0000 0087"
+                                            readonly
+                                        />
+                                        <span class="icon is-small is-left">
+                                            <i class="fa-brands fa-cc-visa"></i>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="column is-narrow">
+                                    <button
+                                        onclick="copyToClipboard('4925000000000087', this)"
+                                        class="button copy-button"
+                                    >
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="columns is-mobile is-vcentered">
+                                <div class="column is-narrow">
+                                    <p class="control has-icons-left">
+                                        <input
+                                            class="input is-primary readonly"
+                                            placeholder="5213 1998 0345 3465"
+                                            readonly
+                                        />
+                                        <span class="icon is-small is-left">
+                                            <i
+                                                class="fa-brands fa-cc-mastercard"
+                                            ></i>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="column is-narrow">
+                                    <button
+                                        onclick="copyToClipboard('5213199803453465', this)"
+                                        class="button copy-button"
+                                    >
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="columns is-mobile is-vcentered">
+                                <div class="column is-narrow">
+                                    <p class="control has-icons-left">
+                                        <input
+                                            class="input is-primary readonly"
+                                            placeholder="5544 3300 0000 0235"
+                                            readonly
+                                        />
+                                        <span class="icon is-small is-left">
+                                            <i
+                                                class="fa-brands fa-cc-mastercard"
+                                            ></i>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="column is-narrow">
+                                    <button
+                                        onclick="copyToClipboard('5544330000000235', this)"
+                                        class="button copy-button"
+                                    >
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="columns is-mobile is-vcentered">
+                                <div class="column is-narrow">
+                                    <p class="control has-icons-left">
+                                        <input
+                                            class="input is-primary readonly"
+                                            placeholder="3762 0600 0000 009"
+                                            readonly
+                                        />
+                                        <span class="icon is-small is-left">
+                                            <i class="fa-brands fa-cc-amex"></i>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="column is-narrow">
+                                    <button
+                                        onclick="copyToClipboard('376206000000009', this)"
+                                        class="button copy-button"
+                                    >
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>
             </div>
 
             <!-- Right Column -->
-            <div class="bg-white dark:bg-gray-900 grid p-4">
+            <div class="column">
                 <div id="iframe-container"></div>
             </div>
         </div>
@@ -83,7 +226,8 @@
                     sendEvent('checkout.cleanup()');
 
                     // Remove the iframe from the container
-                    const iframeContainer = document.getElementById('iframe-container');
+                    const iframeContainer =
+                        document.getElementById('iframe-container');
                     while (iframeContainer.firstChild) {
                         iframeContainer.removeChild(iframeContainer.firstChild);
                     }
@@ -107,49 +251,71 @@
 
                 var checkoutJS = document.createElement('script');
                 if (config.production) {
-                    checkoutJS.setAttribute('src', 'https://checkout.dibspayment.eu/v1/checkout.js?v=1');
+                    checkoutJS.setAttribute(
+                        'src',
+                        'https://checkout.dibspayment.eu/v1/checkout.js?v=1'
+                    );
                 } else {
-                    checkoutJS.setAttribute('src', 'https://test.checkout.dibspayment.eu/v1/checkout.js?v=1');
+                    checkoutJS.setAttribute(
+                        'src',
+                        'https://test.checkout.dibspayment.eu/v1/checkout.js?v=1'
+                    );
                 }
 
                 document.head.appendChild(checkoutJS);
 
-                const checkoutOptions = {
-                    checkoutKey: config.checkoutKey,
-                    paymentId: config.paymentId,
-                    language: config.language,
-                    containerId: 'iframe-container',
+                // Wait for the script to load before creating the checkout object
+                checkoutJS.onload = () => {
+                    console.log('Checkout script has been loaded!');
+
+                    // Define the checkout options
+                    const checkoutOptions = {
+                        checkoutKey: config.checkoutKey,
+                        paymentId: config.paymentId,
+                        language: config.language,
+                        containerId: 'iframe-container',
+                    };
+
+                    // Create the checkout object after the script has loaded
+                    const checkout = new Dibs.Checkout(checkoutOptions);
+
+                    // Optionally, you can perform additional actions with the checkout object here
+                    console.log('Checkout object created:', checkout);
+
+                    const iframe = document.getElementById(
+                        'nets-checkout-iframe'
+                    );
+
+                    // Publish event when iframe has loaded
+                    iframe.addEventListener('load', () => {
+                        sendEvent('iframe-loaded');
+                    });
+
+                    // Handle address-changed event
+                    checkout.on('address-changed', address => {
+                        sendEvent('address-changes', address);
+                    });
+
+                    // Handle pay-initialized event
+                    checkout.on('pay-initialized', paymentId => {
+                        sendEvent('pay-initialized');
+                        checkout.send('payment-order-finalized', true);
+                        sendEvent('payment-order-finalized', true);
+                    });
+
+                    // Handle payment-completed event
+                    checkout.on('payment-completed', response => {
+                        console.log('payment-completed raised');
+                        sendEvent('payment-completed');
+                    });
+
+                    // Apply the initial theme to the checkout
+                    applyCheckoutTheme(checkout);
                 };
-
-                checkout = new Dibs.Checkout(checkoutOptions);
-
-                const iframe = document.getElementById('nets-checkout-iframe');
-
-                // Publish event when iframe has loaded
-                iframe.addEventListener('load', () => {
-                    sendEvent('iframe-loaded');
-                });
-
-                // Handle address-changed event
-                checkout.on('address-changed', address => {
-                    sendEvent('address-changes', address);
-                });
-
-                // Handle pay-initialized event
-                checkout.on('pay-initialized', paymentId => {
-                    sendEvent('pay-initialized');
-                    checkout.send('payment-order-finalized', true);
-                    sendEvent('payment-order-finalized', true);
-                });
-
-                // Handle payment-completed event
-                checkout.on('payment-completed', response => {
-                    console.log('payment-completed raised');
-                    sendEvent('payment-completed');
-                });
-
-                // Apply the initial theme to the checkout
-                applyCheckoutTheme();
+                // Handle script loading errors
+                checkoutJS.onerror = () => {
+                    console.error('Failed to load the checkout script.');
+                };
             }
 
             // Function to fetch configuration and initialize checkout
@@ -161,11 +327,19 @@
             }
 
             // Function to copy text to clipboard
-            function copyToClipboard(text) {
+            function copyToClipboard(text, button) {
+                const originalText = button.innerHTML; // Store the original text
+
                 navigator.clipboard
                     .writeText(text)
                     .then(() => {
                         console.log('Text copied to clipboard:', text);
+                        button.innerHTML = '<i class="fa-solid fa-check"></i>'; // Show only the checkmark icon
+
+                        // Set a timeout to revert the button text after 1 second
+                        setTimeout(() => {
+                            button.innerHTML = originalText; // Revert to the original text
+                        }, 1000); // 1000 milliseconds = 1 second
                     })
                     .catch(err => {
                         console.error('Could not copy text: ', err);
@@ -173,30 +347,32 @@
             }
 
             // Function to apply the theme to the checkout
-            function applyCheckoutTheme() {
-                if (checkout) {
-                    const theme = document.documentElement.classList.contains('dark')
-                        ? {
-                              useLightIcons: true,
-                              backgroundColor: 'rgb(31, 34, 41)',
-                              panelColor: 'rgb(36, 41, 46)',
-                              textColor: 'rgb(200,200,200)',
-                              panelTextColor: 'rgb(200,200,200)',
-                              primaryColor: 'rgb(102, 120, 255)',
-                              linkColor: 'rgb(102, 120, 255)',
-                              buttonbackgroundColor: 'rgb(102, 120, 255)',
-                              primaryOutlineColor: 'rgb(102, 120, 255)',
-                              outlineColor: 'rgb(31, 34, 41)',
-                              panelLinkColor: 'rgb(102, 120, 255)',
-                          }
-                        : 'light';
-                    checkout.setTheme(theme);
-                }
+            function applyCheckoutTheme(checkout) {
+                const theme = document.documentElement.classList.contains(
+                    'dark'
+                )
+                    ? {
+                          useLightIcons: true,
+                          backgroundColor: 'rgb(20, 22, 26)',
+                          panelColor: 'rgb(36, 41, 46)',
+                          textColor: 'rgb(200,200,200)',
+                          panelTextColor: 'rgb(200,200,200)',
+                          primaryColor: 'rgb(102, 120, 255)',
+                          linkColor: 'rgb(102, 120, 255)',
+                          buttonbackgroundColor: 'rgb(102, 120, 255)',
+                          primaryOutlineColor: 'rgb(102, 120, 255)',
+                          outlineColor: 'rgb(31, 34, 41)',
+                          panelLinkColor: 'rgb(102, 120, 255)',
+                      }
+                    : 'light';
+                checkout.setTheme(theme);
             }
 
             // Function to set the theme based on user preference or system settings
             function setTheme() {
-                const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const prefersDarkMode = window.matchMedia(
+                    '(prefers-color-scheme: dark)'
+                ).matches;
                 const savedTheme = localStorage.currentTheme;
 
                 // Determine the theme to apply
