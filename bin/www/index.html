@@ -3,110 +3,232 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Payment Example</title>
-    </head>
-    <body>
-        <div id="iframe-container"></div>
+        <title>nexi-cli</title>
+        <script src="https://cdn.tailwindcss.com"></script>
         <script>
-            // creating object to store checkout in
-            let checkout = null;
-            document.addEventListener('DOMContentLoaded', () => {
-                // Your code to initiate the request
-                if (checkout) {
-                    // delete listeners
-                    checkout.cleanup();
-                    fetch('event', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'bg-gray-900': '#ff0000', // Override primary color
+                            secondary: '#00ff00', // Override secondary color
                         },
-                        body: JSON.stringify({
-                            event: 'checkout.cleanup()',
-                        }),
-                    });
-                    // removes the iframe from the container
-                    const iframeContainer =
-                        document.getElementById('iframe-container');
+                    },
+                },
+            };
+        </script>
+    </head>
+    <body class="bg-white dark:bg-gray-800 dark:text-white">
+        <div class="grid grid-cols-1 md:grid-cols-[300px_1fr] h-screen">
+            <!-- Left Column -->
+            <div class="flex items-start">
+                <div class="grid grid-cols-1 p-4 pr-0 w-full">
+                    <h1 class="ps-15 text-2xl mb-6">Test Cards</h1>
+                    <ul class="grid gap-4 justify-center">
+                        <!-- Example Credit Card Numbers -->
+                        <li class="flex w-auto gap-2 items-stretch items-center">
+                            <input
+                                class="font-mono text-center disabled:border-green-500 bg-green-100 border rounded-md select-none"
+                                placeholder="4268 2700 8737 4847"
+                            />
+
+                            <button
+                                onclick="copyToClipboard('4268270087374847')"
+                                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                            >
+                                Copy
+                            </button>
+                        </li>
+                        <li class="flex w-auto gap-2 items-stretch items-center">
+                            <input
+                                class="font-mono text-center disabled:border-green-500 bg-green-100 border rounded-md select-none"
+                                placeholder="4925 0000 0000 0087"
+                            />
+                            <button
+                                onclick="copyToClipboard('4925000000000087')"
+                                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                            >
+                                Copy
+                            </button>
+                        </li>
+                        <li class="flex w-auto gap-2 items-stretch items-center">
+                            <input
+                                class="font-mono text-center disabled:border-green-500 bg-green-100 border rounded-md select-none"
+                                placeholder="4925 0000 0000 0079"
+                            />
+                            <button
+                                onclick="copyToClipboard('4925000000000079')"
+                                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                            >
+                                Copy
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="bg-white dark:bg-gray-900 grid p-4">
+                <div id="iframe-container"></div>
+            </div>
+        </div>
+        <script>
+            // Global variable to store the checkout instance
+            let checkout = null;
+
+            // Function to clean up the checkout instance
+            function cleanupCheckout() {
+                if (checkout) {
+                    checkout.cleanup();
+                    sendEvent('checkout.cleanup()');
+
+                    // Remove the iframe from the container
+                    const iframeContainer = document.getElementById('iframe-container');
                     while (iframeContainer.firstChild) {
                         iframeContainer.removeChild(iframeContainer.firstChild);
                     }
                 }
+            }
+
+            // Function to send events to the server
+            function sendEvent(event, value = null) {
+                fetch('event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ event, value }),
+                });
+            }
+
+            // Function to initialize the checkout
+            function initializeCheckout(config) {
+                document.title = `nexi-cli ${config.paymentId}`;
+
+                var checkoutJS = document.createElement('script');
+                if (config.production) {
+                    checkoutJS.setAttribute('src', 'https://checkout.dibspayment.eu/v1/checkout.js?v=1');
+                } else {
+                    checkoutJS.setAttribute('src', 'https://test.checkout.dibspayment.eu/v1/checkout.js?v=1');
+                }
+
+                document.head.appendChild(checkoutJS);
+
+                const checkoutOptions = {
+                    checkoutKey: config.checkoutKey,
+                    paymentId: config.paymentId,
+                    language: config.language,
+                    containerId: 'iframe-container',
+                };
+
+                checkout = new Dibs.Checkout(checkoutOptions);
+
+                const iframe = document.getElementById('nets-checkout-iframe');
+
+                // Publish event when iframe has loaded
+                iframe.addEventListener('load', () => {
+                    sendEvent('iframe-loaded');
+                });
+
+                // Handle address-changed event
+                checkout.on('address-changed', address => {
+                    sendEvent('address-changes', address);
+                });
+
+                // Handle pay-initialized event
+                checkout.on('pay-initialized', paymentId => {
+                    sendEvent('pay-initialized');
+                    checkout.send('payment-order-finalized', true);
+                    sendEvent('payment-order-finalized', true);
+                });
+
+                // Handle payment-completed event
+                checkout.on('payment-completed', response => {
+                    console.log('payment-completed raised');
+                    sendEvent('payment-completed');
+                });
+
+                // Apply the initial theme to the checkout
+                applyCheckoutTheme();
+            }
+
+            // Function to fetch configuration and initialize checkout
+            function fetchAndInitializeCheckout() {
                 fetch('/data', { method: 'GET' })
                     .then(response => response.json())
-                    .then(config => {
-                        const checkoutOptions = {
-                            checkoutKey: config.checkoutKey,
-                            paymentId: config.paymentId,
-                            language: config.language,
-                            containerId: 'iframe-container',
-                        };
-                        checkout = new Dibs.Checkout(checkoutOptions);
-                        const iframe = document.getElementById(
-                            'nets-checkout-iframe'
-                        );
-
-                        // publish event message when iframe has loaded
-                        iframe.addEventListener('load', () => {
-                            fetch('event', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    event: 'iframe-loaded',
-                                }),
-                            });
-                        });
-                        checkout.on('address-changed', function (address) {
-                            fetch('event', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    event: 'address-changes',
-                                    value: address,
-                                }),
-                            });
-                        });
-                        checkout.on('pay-initialized', function (paymentId) {
-                            fetch('event', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    event: 'pay-initialized',
-                                }),
-                            });
-                            checkout.send('payment-order-finalized', true);
-                            fetch('event', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    event: 'payment-order-finalized',
-                                    value: true,
-                                }),
-                            });
-                        });
-                        checkout.on('payment-completed', function (response) {
-                            console.log('payment-completed raised');
-                            fetch('event', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    event: 'payment-completed',
-                                }),
-                            });
-                        });
-                    })
+                    .then(config => initializeCheckout(config))
                     .catch(error => console.error('Error:', error));
+            }
+
+            // Function to copy text to clipboard
+            function copyToClipboard(text) {
+                navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+                        console.log('Text copied to clipboard:', text);
+                    })
+                    .catch(err => {
+                        console.error('Could not copy text: ', err);
+                    });
+            }
+
+            // Function to apply the theme to the checkout
+            function applyCheckoutTheme() {
+                if (checkout) {
+                    const theme = document.documentElement.classList.contains('dark')
+                        ? {
+                              useLightIcons: true,
+                              backgroundColor: 'rgb(31, 34, 41)',
+                              panelColor: 'rgb(36, 41, 46)',
+                              textColor: 'rgb(200,200,200)',
+                              panelTextColor: 'rgb(200,200,200)',
+                              primaryColor: 'rgb(102, 120, 255)',
+                              linkColor: 'rgb(102, 120, 255)',
+                              buttonbackgroundColor: 'rgb(102, 120, 255)',
+                              primaryOutlineColor: 'rgb(102, 120, 255)',
+                              outlineColor: 'rgb(31, 34, 41)',
+                              panelLinkColor: 'rgb(102, 120, 255)',
+                          }
+                        : 'light';
+                    checkout.setTheme(theme);
+                }
+            }
+
+            // Function to set the theme based on user preference or system settings
+            function setTheme() {
+                const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const savedTheme = localStorage.currentTheme;
+
+                // Determine the theme to apply
+                if (savedTheme === 'dark' || (!savedTheme && prefersDarkMode)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+
+            // Example functions to explicitly set the theme
+            function setLightTheme() {
+                localStorage.currentTheme = 'light';
+                setTheme();
+            }
+
+            function setDarkTheme() {
+                localStorage.currentTheme = 'dark';
+                setTheme();
+            }
+
+            function resetThemeToSystem() {
+                localStorage.removeItem('currentTheme');
+                setTheme();
+            }
+
+            // Initialize everything on document load
+            document.addEventListener('DOMContentLoaded', () => {
+                cleanupCheckout();
+                fetchAndInitializeCheckout();
+                setTheme();
             });
         </script>
-        <script src="https://test.checkout.dibspayment.eu/v1/checkout.js?v=1"></script>
     </body>
 </html>

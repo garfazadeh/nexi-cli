@@ -11,7 +11,22 @@ async function checkAndCreateConfig() {
 
         if (!(await fileExists(configFile))) {
             const defaultConfig = {
-                featureEnabled: false,
+                prodSecretKey: '',
+                prodCheckoutKey: '',
+                testSecretKey: '',
+                testCheckoutKey: '',
+                isTest: true,
+                requestLimit: 5,
+                saveToCSV: false,
+                xApiKey: '',
+                paresCheckoutKey: '',
+                currency: 'SEK',
+                charge: false,
+                checkoutLanguage: 'sv-SE',
+                consumer: true,
+                consumerLocale: 'sv',
+                consumerType: 'B2C',
+                mhcd: true,
             };
             await fs.writeFile(configFile, yaml.dump(defaultConfig), 'utf-8');
         }

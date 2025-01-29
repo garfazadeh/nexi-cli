@@ -20,6 +20,15 @@
     ],
     "importOrderSeparation": true,
     "importOrderSortSpecifiers": true,
+    "overrides": [
+        {
+            "files": "*.html",
+            "options": {
+                "htmlWhitespaceSensitivity": "ignore",
+                "printWidth": 120
+            }
+        }
+    ],
     "plugins": [
         "@trivago/prettier-plugin-sort-imports"
     ]

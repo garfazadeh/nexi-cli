@@ -92,14 +92,18 @@ export default async function runCreateCheckout(options) {
         ],
     };
     if (!options.hosted) {
-        log(chalk.green.bold('Sent payload:'));
-        log(
-            util.inspect(payload, {
-                depth: null,
-                colors: true,
-                maxArrayLength: null,
-            })
-        );
+        if (options.verbose) {
+            log(chalk.blue('Sent create payment request:'));
+            log(
+                util.inspect(payload, {
+                    depth: null,
+                    colors: true,
+                    maxArrayLength: null,
+                })
+            );
+        } else {
+            log(chalk.blue('Sent create payment request'));
+        }
     }
 
     if (options.hosted) {
@@ -133,9 +137,13 @@ export default async function runCreateCheckout(options) {
                 const url = `http://localhost:${config.port}/data`;
 
                 const postData = {
-                    checkoutKey: config.testCheckoutKey,
+                    checkoutKey: options.production
+                        ? config.prodCheckoutKey
+                        : config.testCheckoutKey,
+                    environment: options.production,
                     paymentId: response.paymentId,
                     language: options.lang,
+                    verbose: options.verbose,
                 };
 
                 try {

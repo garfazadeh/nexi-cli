@@ -36,23 +36,50 @@ app.get('/data', (req, res) => {
 
 // POST endpoint to save data
 app.post('/event', (req, res) => {
-    console.log(chalk.bold.green('\nCheckout JS SDK event received:'));
-    console.log(req.body);
+    if (req.body.event === 'iframe-loaded' && config.verbose) {
+        console.log(
+            chalk.dim(`\nClient raised event ${chalk.bold(req.body.event)}`)
+        );
+    }
+    if (req.body.event === 'payment-order-finalized') {
+        console.log(
+            chalk.yellow(
+                `\nClient sent ${chalk.bold(req.body.event)} event with value ${chalk.bold(req.body.value)}`
+            )
+        );
+    } else {
+        console.log(
+            chalk.yellow(
+                `\nCheckout JS raised event ${chalk.bold(req.body.event)}`
+            )
+        );
+    }
+
     res.send('Data received');
 });
 
 // GET endpoint to retrieve data
 app.post('/webhook', (req, res) => {
-    console.log(
-        chalk.bold.green(`\nWebhook event ${req.body.event} received:`)
-    );
-    console.log(
-        util.inspect(req.body, {
-            depth: null,
-            colors: true,
-            maxArrayLength: null,
-        })
-    );
+    if (data.verbose) {
+        console.log(
+            chalk.blue(
+                `\nWebhook ` + chalk.bold(req.body.event) + ' event received:'
+            )
+        );
+        console.log(
+            util.inspect(req.body, {
+                depth: null,
+                colors: true,
+                maxArrayLength: null,
+            })
+        );
+    } else {
+        console.log(
+            chalk.blue(
+                `\nWebhook ` + chalk.bold(req.body.event) + ' event received'
+            )
+        );
+    }
     res.status(200).send('Webhook received');
 });
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 import { program } from 'commander';
-import e from 'express';
 
 import runCreateCheckout from '../src/commands/createCheckout.js';
 import runCreateCompletedCheckout from '../src/commands/createCompletedCheckout.js';
@@ -37,9 +36,15 @@ program
             );
             process.exit(1);
         }
-        options.prodSecretKey = config.prodSecretKey || options.prodSecretKey;
-        options.testSecretKey = config.testSecretKey || options.testSecretKey;
-        options.production = !config.isTest || options.production;
+        options.prodSecretKey = options.prodSecretKey
+            ? options.prodSecretKey
+            : config.prodSecretKey;
+        options.testSecretKey = options.testSecretKey
+            ? options.testSecretKey
+            : config.testSecretKey;
+        options.production = options.production
+            ? options.production
+            : !config.isTest;
         options.save = config.saveToCSV || options.save;
         runFetchPayment(options, arg);
     });
@@ -127,11 +132,18 @@ program
     )
     .option('--prod-secret-key <string>', 'Your production secret API key')
     .option('--test-secret-key <string>', 'Your test secret API key')
-    .option('-p, --production', 'Use production environment', !config.isTest)
+    .option('-p, --production', 'Use production environment')
+    .option('-v, --verbose', 'Output additional information')
     .action(options => {
-        options.prodSecretKey = config.prodSecretKey || options.prodSecretKey;
-        options.testSecretKey = config.testSecretKey || options.testSecretKey;
-        options.production = !config.isTest || options.production;
+        options.prodSecretKey = options.prodSecretKey
+            ? options.prodSecretKey
+            : config.prodSecretKey;
+        options.testSecretKey = options.testSecretKey
+            ? options.testSecretKey
+            : config.testSecretKey;
+        options.production = options.production
+            ? options.production
+            : !config.isTest;
         runCreateCheckout(options);
     });
 
@@ -178,9 +190,11 @@ program
         config.testSecretKey || ''
     )
     .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
+    .option('-v, --verbose', 'Output additional information', config.verbose)
     .action((arg, options) => {
-        options.testSecretKey = config.testSecretKey || options.testSecretKey;
-        options.production = !config.isTest || options.production;
+        options.testSecretKey = options.testSecretKey
+            ? options.testSecretKey
+            : config.testSecretKey;
         options.save = config.saveToCSV || options.save;
         runCreateCompletedCheckout(options, arg);
     });
@@ -232,7 +246,9 @@ program
     .option('--test-secret-key <key>', 'Your test secret API key')
     .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
     .action((arg, options) => {
-        options.testSecretKey = config.testSecretKey || options.testSecretKey;
+        options.testSecretKey = options.testSecretKey
+            ? options.testSecretKey
+            : config.testSecretKey;
         options.save = config.saveToCSV || options.save;
         if (options.unscheduled || options.scheduled) {
             runCreateSubscriptions(options, arg);
