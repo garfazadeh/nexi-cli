@@ -312,7 +312,7 @@
                     };
 
                     // Create the checkout object after the script has loaded
-                    const checkout = new Dibs.Checkout(checkoutOptions);
+                    checkout = new Dibs.Checkout(checkoutOptions);
 
                     // Optionally, you can perform additional actions with the checkout object here
                     console.log('Checkout object created:', checkout);
@@ -416,22 +416,39 @@
                 } else {
                     document.documentElement.classList.remove('dark');
                 }
+
+                if (checkout) {
+                    applyCheckoutTheme(checkout);
+                }
             }
 
-            // Example functions to explicitly set the theme
-            function setthemeLight() {
-                localStorage.currentTheme = 'light';
-                setTheme();
+            // Function to get the checkout instance
+            function getCheckoutInstance() {
+                return checkout; // Assuming `checkout` is the global variable storing the checkout instance
             }
 
-            function setthemeDark() {
-                localStorage.currentTheme = 'dark';
-                setTheme();
-            }
+            // Listen for system theme changes
+            function watchSystemThemeChanges() {
+                const systemThemeQuery = window.matchMedia(
+                    '(prefers-color-scheme: dark)'
+                );
+                const handleSystemThemeChange = event => {
+                    // Only update the theme if there's no saved user preference
+                    if (!localStorage.currentTheme) {
+                        setTheme();
+                        // Reapply the checkout theme if the checkout instance is available
+                        const checkout = getCheckoutInstance();
+                        if (checkout) {
+                            applyCheckoutTheme(checkout);
+                        }
+                    }
+                };
 
-            function resetThemeToSystem() {
-                localStorage.removeItem('currentTheme');
-                setTheme();
+                // Add event listener for system theme changes
+                systemThemeQuery.addEventListener(
+                    'change',
+                    handleSystemThemeChange
+                );
             }
 
             // Initialize everything on document load
@@ -439,6 +456,7 @@
                 cleanupCheckout();
                 fetchAndInitializeCheckout();
                 setTheme();
+                watchSystemThemeChanges(); // Start watching for system theme changes
             });
         </script>
     </body>
