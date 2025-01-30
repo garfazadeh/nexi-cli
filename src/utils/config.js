@@ -19,7 +19,6 @@ async function checkAndCreateConfig() {
                 requestLimit: 5,
                 saveToCSV: false,
                 xApiKey: '',
-                paresCheckoutKey: '',
                 currency: 'SEK',
                 charge: false,
                 checkoutLanguage: 'sv-SE',
@@ -27,6 +26,7 @@ async function checkAndCreateConfig() {
                 consumerLocale: 'sv',
                 consumerType: 'B2C',
                 mhcd: true,
+                port: 8080,
             };
             await fs.writeFile(configFile, yaml.dump(defaultConfig), 'utf-8');
         }
