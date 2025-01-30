@@ -112,9 +112,9 @@ export default async function runCreateCheckout(options) {
             ...{
                 integrationType: 'HostedPaymentPage',
                 url: null,
-                returnUrl: 'https://www.test.com/success',
-                cancelUrl: 'https://www.test.com/cancel',
-                termsUrl: 'https://www.test.com/terms',
+                returnUrl: 'https://shop.easy.nets.eu/success',
+                cancelUrl: 'https://shop.easy.nets.eu/cancel',
+                termsUrl: 'https://shop.easy.nets.eu/terms',
                 merchantHandlesConsumerData: true,
             },
         };
@@ -144,8 +144,9 @@ export default async function runCreateCheckout(options) {
                     paymentId: response.paymentId,
                     language: options.lang,
                     verbose: options.verbose,
-                    darkTheme: options.darkTheme,
-                    lightTheme: options.lightTheme,
+                    themeDark: options.themeDark,
+                    themeLight: options.themeLight,
+                    finalizedEvent: !options.finalizedEvent,
                 };
 
                 try {

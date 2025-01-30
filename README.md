@@ -26,22 +26,32 @@ $ npm install
    your keys.
 
 ```yml
-prodSecretKey:
-prodCheckoutKey:
-testSecretKey:
-testCheckoutKey:
-isTest: true
 requestLimit: 5
-saveToCSV: false
+export: false
 xApiKey:
-curr: SEK
-charge: true
-checkoutLanguage: sv-SE
+currency: USD
+charge: false
+checkoutLanguage: en-GB
 consumer: true
-consumerLocale: sv
+consumerLocale: en
 consumerType: B2C
 mhcd: true
 port: 8080
+themeDark:
+    backgroundColor: rgb(20, 22, 26)
+    buttonbackgroundColor: rgb(72, 199, 142)
+    buttonTextColor: rgb(20, 22, 26)
+    linkColor: rgb(72, 199, 142)
+    outlineColor: rgb(31, 34, 41)
+    panelColor: rgb(36, 41, 46)
+    panelLinkColor: rgb(72, 199, 142)
+    panelTextColor: rgb(200,200,200)
+    primaryColor: rgb(72, 199, 142)
+    primaryOutlineColor: rgb(72, 199, 142)
+    textColor: rgb(200,200,200)
+    useLightIcons: true
+themeLight: {}
+verbose: false
 ```
 
 4.  Make CLI accessible globally
@@ -90,7 +100,7 @@ Options:
   -f, --file <path>        Path to file containing list of payment ID
   -p, --production         Use production environment (default: false)
   --prod-secret-key <key>  Your production secret API key
-  -s, --save               Save table to CSV-file (default: false)
+  -e, --export             Export table to CSV-file (default: false)
   -t, --table              Display results in a table
   --test-secret-key <key>  Your test secret API key
   -h, --help               display help for command
@@ -108,10 +118,12 @@ Options:
                               true)
   -c, --currency <code>       Set checkout currency (default: "SEK")
   --consumer                  Automatically adds consumer object (default: true)
-  --consumer-locale <locale>  Set consumer locale (default: "sv")
-  --consumer-type <type>      Set consumer type (default: "B2C")
+  --consumer-locale <locale>  Available locales: 'da', 'de', 'de_AT', 'en',
+                              'nb_NO', 'sv' (default: "sv")
+  --consumer-type <type>      Set type of consumer generated (default: "B2C")
   -H, --hosted                Hosted mode provides checkout link
   -m, --mhcd                  Hides address fields in checkout (default: true)
+  --no-charge                 Disables automatic charge
   --no-consumer               Automatically removes consumer object
   --no-mhcd                   Displays address fields in checkout
   -h, --help                  display help for command
@@ -132,17 +144,21 @@ Options:
                                 true)
   --consumer-locale <locale>    Set consumer locale (default: "sv")
   --consumer-type <type>        Set consumer type (default: "B2C")
+  -f, --finalized-event         Sends payment-order-finalized as false
   -H, --hosted                  Hosted mode provides checkout link
   --lang <string>               Set checkout language (default: "sv-SE")
   -m, --mhcd                    Hides address fields in checkout (default: true)
-  --no-consumer                 Automatically removes consumer object
-  --no-mhcd                     Displays address fields in checkout
-  -p, --production              Use production environment
+  --no-charge                   Negate charge
+  --no-consumer                 Negate consumer
+  --no-mhcd                     Negate mhcd
+  --no-production               Negate production
+  --no-verbose                  Negate verbose
+  -p, --production              Use production environment (default: false)
   --prod-checkout-key <string>  Your production checkout key
   --prod-secret-key <string>    Your production secret API key
   --test-checkout-key <string>  Your test checkout key
   --test-secret-key <string>    Your test secret API key
-  -v, --verbose                 Output additional information
+  -v, --verbose                 Output additional information (default: true)
   -h, --help                    display help for command
 ```
 
@@ -163,11 +179,14 @@ Options:
   --consumer                  Automatically adds consumer object (default: true)
   --consumer-locale <locale>  Set consumer locale (default: "sv")
   --consumer-type <type>      Set consumer type (default: "B2C")
+  -e, --export                Export table to CSV-file (default: false)
   -H, --hosted                Hosted mode provides checkout link
   -m, --mhcd                  Hides address fields in checkout (default: true)
-  --no-consumer               Automatically removes consumer object
-  --no-mhcd                   Displays address fields in checkout
-  -s, --save                  Save table to CSV-file (default: false)
+  --no-charge                 Negate charge
+  --no-consumer               Negate consumer
+  --no-export                 Negate export
+  --no-mhcd                   Negate mhcd
+  --no-verbose                Negate verbose
   -S, --scheduled             Create scheduled subscription
   -t, --table                 Display results in a table
   --test-checkout-key <key>   Your test checkout API key
@@ -188,10 +207,12 @@ Arguments:
   paymentId                Payment ID
 
 Options:
+  -e, --export             Export table to CSV-file (default: false)
   -f, --file <path>        Path to file containing list of payment ID
+  --no-export              Negate export
+  --no-production          Negate production
   -p, --production         Use production environment (default: false)
   --prod-secret-key <key>  Your production secret API key
-  -s, --save               Save table to CSV-file (default: false)
   -t, --table              Display results in a table
   --test-secret-key <key>  Your test secret API key
   -h, --help               display help for command

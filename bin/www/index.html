@@ -285,7 +285,7 @@
                 document.title = `nexi-cli ${config.paymentId}`;
 
                 var checkoutJS = document.createElement('script');
-                if (config.production) {
+                if (config.environment) {
                     checkoutJS.setAttribute(
                         'src',
                         'https://checkout.dibspayment.eu/v1/checkout.js?v=1'
@@ -334,8 +334,14 @@
                     // Handle pay-initialized event
                     checkout.on('pay-initialized', paymentId => {
                         sendEvent('pay-initialized');
-                        checkout.send('payment-order-finalized', true);
-                        sendEvent('payment-order-finalized', true);
+                        checkout.send(
+                            'payment-order-finalized',
+                            config.finalizedEvent
+                        );
+                        sendEvent(
+                            'payment-order-finalized',
+                            config.finalizedEvent
+                        );
                     });
 
                     // Handle payment-completed event
@@ -392,8 +398,8 @@
                 const theme = document.documentElement.classList.contains(
                     'dark'
                 )
-                    ? config.darkTheme
-                    : config.lightTheme;
+                    ? config.themeDark
+                    : config.themeLight;
                 checkout.setTheme(theme);
             }
 
@@ -413,12 +419,12 @@
             }
 
             // Example functions to explicitly set the theme
-            function setLightTheme() {
+            function setthemeLight() {
                 localStorage.currentTheme = 'light';
                 setTheme();
             }
 
-            function setDarkTheme() {
+            function setthemeDark() {
                 localStorage.currentTheme = 'dark';
                 setTheme();
             }

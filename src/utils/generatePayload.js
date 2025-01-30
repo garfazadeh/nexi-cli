@@ -1,34 +1,68 @@
-import { Faker, faker, sv } from '@faker-js/faker';
+import {
+    Faker,
+    base,
+    da,
+    de,
+    de_AT,
+    de_CH,
+    en,
+    en_GB,
+    faker,
+    fi,
+    nb_NO,
+    sv,
+} from '@faker-js/faker';
 
 import configPromise from './config.js';
 
+const localeMapping = {
+    da,
+    de,
+    de_AT,
+    en,
+    nb_NO,
+    sv,
+};
+
 const config = await configPromise;
 
-const generateSwedishPhoneNumber = () => {
-    const phoneFormats = [
-        '020######',
-        '8######',
-        '73#######',
-        '72#######',
-        '76#######',
-        '70#######',
-    ];
-
-    const randomFormat =
-        phoneFormats[Math.floor(Math.random() * phoneFormats.length)];
-    const randomDigits = () => Math.floor(Math.random() * 10);
-
-    return [...randomFormat]
-        .map(char => (char === '#' ? randomDigits() : char))
-        .join('');
-};
+function getSpecificsFromLocale(locale) {
+    switch (locale) {
+        case 'da':
+            return { countryCodeAlpha: 'DNK', countryCodeNumeric: '45' }; // Denmark
+        case 'de':
+            return { countryCodeAlpha: 'DEU', countryCodeNumeric: '49' }; // Germany
+        case 'de_AT':
+            return { countryCodeAlpha: 'AUT', countryCodeNumeric: '43' }; // Austria
+        case 'en':
+            return { countryCodeAlpha: 'USA', countryCodeNumeric: '1' }; // United States
+        case 'nb_NO':
+            return { countryCodeAlpha: 'NOR', countryCodeNumeric: '47' }; // Norway
+        case 'sv':
+            return { countryCodeAlpha: 'SWE', countryCodeNumeric: '46' }; // Sweden
+        default:
+            return { countryCodeAlpha: '', countryCodeNumeric: '' }; // Default case if locale is not recognized
+    }
+}
 
 function createRandomConsumer(options) {
     const customFaker = new Faker({
-        locale: [sv],
+        locale: [localeMapping[options.consumerLocale]],
     });
     const firstName = customFaker.person.firstName();
     const lastName = customFaker.person.lastName();
+    const specifics = getSpecificsFromLocale(options.consumerLocale);
+    let prefix = '';
+    let phoneNumber = customFaker.phone.number({ style: 'international' });
+    if (options.consumerLocale === 'en') {
+        prefix = phoneNumber.substring(0, 2);
+        phoneNumber = phoneNumber.substring(2);
+    } else {
+        prefix = phoneNumber.substring(0, 3);
+        phoneNumber = phoneNumber.substring(3);
+    }
+
+    const includeAddressLine2 = Math.random() < 0.5;
 
     const consumer = {
         reference: faker.string.alpha(10),
@@ -40,14 +74,17 @@ function createRandomConsumer(options) {
             addressLine1:
                 customFaker.location.street() +
                 ' ' +
-                faker.string.numeric({ length: { min: 1, max: 2 } }),
-            postalCode: faker.string.numeric({ length: { min: 5, max: 5 } }),
+                customFaker.location.buildingNumber(),
+            addressLine2: includeAddressLine2
+                ? customFaker.location.secondaryAddress()
+                : '',
+            postalCode: customFaker.location.zipCode(),
             city: customFaker.location.city(),
-            country: 'SWE',
+            country: specifics.countryCodeAlpha,
         },
         phoneNumber: {
-            prefix: '+46',
-            number: generateSwedishPhoneNumber(),
+            prefix: prefix,
+            number: phoneNumber,
         },
     };
     if (options.consumerType === 'B2C') {

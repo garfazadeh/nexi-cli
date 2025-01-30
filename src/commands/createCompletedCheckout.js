@@ -90,7 +90,7 @@ export default async function runCreateCompletedCheckout(options, arg) {
         });
     }
 
-    if (options.save) {
+    if (options.export) {
         // create fields for csv file
         const fields = [
             { label: 'Payment ID', value: 'paymentId' },
