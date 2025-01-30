@@ -17,29 +17,31 @@
         />
         <style>
             /* Add this CSS to your stylesheet */
-            .copy-button {
-                width: 80px; /* Set a fixed width */
-                height: 40px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
+            .button {
+                width: 89px;
+                height: 50px;
+            }
+            .control.has-icons-left .icon.is-left,
+            .control.has-icons-left .input:hover ~ .icon,
+            .control.has-icons-left .select:hover ~ .icon,
+            .control.has-icons-right .input:hover ~ .icon,
+            .control.has-icons-right .select:hover ~ .icon {
+                color: var(--bulma-input-icon-focus-color);
             }
         </style>
     </head>
     <body>
         <div class="columns">
-            <!-- Left Column -->
             <div class="column is-narrow">
                 <div class="column">
-                    <p class="title is-5">Test Cards</p>
-                    <ul>
-                        <!-- Example Credit Card Numbers -->
+                    <p class="title is-size-3 m-5">Test Cards</p>
+                    <ul class="m-5">
                         <li>
                             <div class="columns is-mobile is-vcentered">
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
                                         <input
-                                            class="input is-primary readonly"
+                                            class="input is-medium is-primary readonly"
                                             placeholder="4268 2700 8737 4847"
                                             readonly
                                         />
@@ -51,7 +53,7 @@
                                 <div class="column is-narrow">
                                     <button
                                         onclick="copyToClipboard('4268270087374847', this)"
-                                        class="button copy-button"
+                                        class="button copy-button is-medium"
                                     >
                                         Copy
                                     </button>
@@ -63,7 +65,7 @@
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
                                         <input
-                                            class="input is-warning readonly"
+                                            class="input is-medium is-warning readonly"
                                             placeholder="4925 0000 0000 0061"
                                             readonly
                                         />
@@ -75,7 +77,7 @@
                                 <div class="column is-narrow">
                                     <button
                                         onclick="copyToClipboard('4925000000000061', this)"
-                                        class="button copy-button"
+                                        class="button copy-button is-medium"
                                     >
                                         Copy
                                     </button>
@@ -87,7 +89,7 @@
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
                                         <input
-                                            class="input is-warning readonly"
+                                            class="input is-medium is-warning readonly"
                                             placeholder="4925 0000 0000 0079"
                                             readonly
                                         />
@@ -99,7 +101,7 @@
                                 <div class="column is-narrow">
                                     <button
                                         onclick="copyToClipboard('4925000000000079', this)"
-                                        class="button copy-button"
+                                        class="button copy-button is-medium"
                                     >
                                         Copy
                                     </button>
@@ -111,7 +113,7 @@
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
                                         <input
-                                            class="input is-danger readonly"
+                                            class="input is-medium is-danger readonly"
                                             placeholder="4925 0000 0000 0087"
                                             readonly
                                         />
@@ -123,7 +125,7 @@
                                 <div class="column is-narrow">
                                     <button
                                         onclick="copyToClipboard('4925000000000087', this)"
-                                        class="button copy-button"
+                                        class="button copy-button is-medium"
                                     >
                                         Copy
                                     </button>
@@ -135,7 +137,7 @@
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
                                         <input
-                                            class="input is-primary readonly"
+                                            class="input is-medium is-primary readonly"
                                             placeholder="5213 1998 0345 3465"
                                             readonly
                                         />
@@ -149,7 +151,7 @@
                                 <div class="column is-narrow">
                                     <button
                                         onclick="copyToClipboard('5213199803453465', this)"
-                                        class="button copy-button"
+                                        class="button copy-button is-medium"
                                     >
                                         Copy
                                     </button>
@@ -161,7 +163,7 @@
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
                                         <input
-                                            class="input is-primary readonly"
+                                            class="input is-medium is-primary readonly"
                                             placeholder="5544 3300 0000 0235"
                                             readonly
                                         />
@@ -175,7 +177,7 @@
                                 <div class="column is-narrow">
                                     <button
                                         onclick="copyToClipboard('5544330000000235', this)"
-                                        class="button copy-button"
+                                        class="button copy-button is-medium"
                                     >
                                         Copy
                                     </button>
@@ -187,7 +189,7 @@
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
                                         <input
-                                            class="input is-primary readonly"
+                                            class="input is-medium is-primary readonly"
                                             placeholder="3762 0600 0000 009"
                                             readonly
                                         />
@@ -199,7 +201,7 @@
                                 <div class="column is-narrow">
                                     <button
                                         onclick="copyToClipboard('376206000000009', this)"
-                                        class="button copy-button"
+                                        class="button copy-button is-medium"
                                     >
                                         Copy
                                     </button>
@@ -329,16 +331,19 @@
             // Function to copy text to clipboard
             function copyToClipboard(text, button) {
                 const originalText = button.innerHTML; // Store the original text
+                const originalClass = button.className;
 
                 navigator.clipboard
                     .writeText(text)
                     .then(() => {
                         console.log('Text copied to clipboard:', text);
-                        button.innerHTML = '<i class="fa-solid fa-check"></i>'; // Show only the checkmark icon
-
+                        button.innerHTML =
+                            '<span class="icon"><i class="fa-solid fa-check"></i></span>'; // Show only the checkmark icon
+                        button.classList.add('is-success');
                         // Set a timeout to revert the button text after 1 second
                         setTimeout(() => {
                             button.innerHTML = originalText; // Revert to the original text
+                            button.className = originalClass;
                         }, 1000); // 1000 milliseconds = 1 second
                     })
                     .catch(err => {

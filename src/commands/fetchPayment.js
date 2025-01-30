@@ -36,35 +36,37 @@ function delay(ms) {
 }
 
 export default async function runFetchPayment(options, arg) {
+    const paymentIds = [];
     if (options.file) {
         // read file containing payment ID
         const fileContent = readFileSync(options.file, 'utf8');
-        const paymentIds = fileContent.split('\n').map(line => line.trim());
+        paymentIds = fileContent.split('\n').map(line => line.trim());
+    } else {
+        paymentIds.push(arg);
+    }
+    // process list of payment ID
+    validateInput(paymentIds);
 
-        // process list of payment ID
-        validateInput(paymentIds);
-
-        const responses = [];
-        const setDelay = 1000 / config.requestLimit;
-        for (let i = 0; i < paymentIds.length; i++) {
-            try {
-                const response = await retrievePayment(paymentIds[i], options);
-                responses.push(response.data);
-            } catch {
-                process.exit(1);
-            }
+    const responses = [];
+    const setDelay = 1000 / config.requestLimit;
+    for (let i = 0; i < paymentIds.length; i++) {
+        try {
+            const response = await retrievePayment(paymentIds[i], options);
+            responses.push(response.data);
             updateLoader(i + 1, paymentIds.length, 'Fetching payments');
             await delay(setDelay);
+        } catch {
+            process.exit(1);
         }
-
+    }
+    let tableContent = [];
+    if (options.table) {
         // format the response object to a flat structure
-        const formattedContent = await responses.map(response => {
+        tableContent = await responses.map(response => {
             const { payment } = response;
             const { orderDetails, paymentDetails, summary } = payment;
-
             const formatAmount = amount =>
                 amount && amount !== 0 ? (amount / 100).toFixed(2) : 0;
-
             return {
                 paymentId: payment.paymentId,
                 currency: orderDetails.currency,
@@ -77,35 +79,31 @@ export default async function runFetchPayment(options, arg) {
             };
         });
         console.log('\n');
-        console.table(formattedContent);
-
-        if (options.save) {
-            // create fields for csv file
-            const fields = [
-                { label: 'Payment ID', value: 'paymentId' },
-                { label: 'Currency', value: 'currency' },
-                { label: 'Payment Type', value: 'paymentType' },
-                { label: 'Payment Method', value: 'paymentMethod' },
-                { label: 'Reserved Amount', value: 'reservedAmount' },
-                { label: 'Charged Amount', value: 'chargedAmount' },
-                { label: 'Refunded Amount', value: 'refundedAmount' },
-                { label: 'Cancelled Amount', value: 'cancelledAmount' },
-            ];
-            writeCsv('responses.csv', formattedContent, fields);
-        }
-    }
-    if (arg) {
-        try {
-            const response = await retrievePayment(arg, options);
+        console.table(tableContent);
+    } else {
+        const resultList = await responses.map(response => {
             console.log(
-                util.inspect(response.data, {
+                util.inspect(response, {
                     depth: null,
                     colors: true,
                     maxArrayLength: null,
                 })
             );
-        } catch {
-            process.exit(1);
-        }
+        });
+    }
+
+    if (options.save) {
+        // create fields for csv file
+        const fields = [
+            { label: 'Payment ID', value: 'paymentId' },
+            { label: 'Currency', value: 'currency' },
+            { label: 'Payment Type', value: 'paymentType' },
+            { label: 'Payment Method', value: 'paymentMethod' },
+            { label: 'Reserved Amount', value: 'reservedAmount' },
+            { label: 'Charged Amount', value: 'chargedAmount' },
+            { label: 'Refunded Amount', value: 'refundedAmount' },
+            { label: 'Cancelled Amount', value: 'cancelledAmount' },
+        ];
+        writeCsv('responses.csv', tableContent, fields);
     }
 }

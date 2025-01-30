@@ -5,7 +5,6 @@ import { program } from 'commander';
 import runCreateCheckout from '../src/commands/createCheckout.js';
 import runCreateCompletedCheckout from '../src/commands/createCompletedCheckout.js';
 import runCreatePayload from '../src/commands/createPayload.js';
-import runCreateSubscriptions from '../src/commands/createSubscriptions.js';
 import runFetchPayment from '../src/commands/fetchPayment.js';
 import configPromise from '../src/utils/config.js';
 
@@ -29,6 +28,7 @@ program
     .option('--test-secret-key <key>', 'Your test secret API key')
     .option('-p, --production', 'Use production environment', !config.isTest)
     .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
+    .option('-t, --table', 'Display results in a table')
     .action((arg, options) => {
         if (!arg && !options.file) {
             console.error(
@@ -45,7 +45,7 @@ program
         options.production = options.production
             ? options.production
             : !config.isTest;
-        options.save = config.saveToCSV || options.save;
+        options.save = options.save ? options.save : config.saveToCSV;
         runFetchPayment(options, arg);
     });
 
@@ -184,79 +184,28 @@ program
         'Charge payment automatically if reserved',
         config.charge || false
     )
-    .requiredOption(
-        '--test-secret-key <key>',
-        'Your test secret API key',
-        config.testSecretKey || ''
-    )
+    .option('-u, --unscheduled', 'Create unscheduled subscription')
+    .option('-S, --scheduled', 'Create scheduled subscription')
+    .option('--test-secret-key <key>', 'Your test secret API key')
+    .option('--test-checkout-key <key>', 'Your test checkout API key')
     .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
+    .option('-t, --table', 'Display results in a table')
     .option('-v, --verbose', 'Output additional information', config.verbose)
     .action((arg, options) => {
         options.testSecretKey = options.testSecretKey
             ? options.testSecretKey
             : config.testSecretKey;
+        options.testCheckoutKey = options.testCheckoutKey
+            ? options.testCheckoutKey
+            : config.testCheckoutKey;
         options.save = config.saveToCSV || options.save;
-        runCreateCompletedCheckout(options, arg);
-    });
-
-program
-    .command('create-subscriptions')
-    .description('Create subscriptions in test environment')
-    .argument('[number]', 'Number of checkouts')
-    .option('-u, --unscheduled', 'Create unscheduled subscription')
-    .option('--scheduled', 'Create scheduled subscription')
-    .option(
-        '-c, --currency <code>',
-        'Set checkout currency',
-        config.currency || 'EUR'
-    )
-    .option('-h, --hosted', 'Hosted mode provides checkout link')
-    .option(
-        '-m, --mhcd',
-        'Hides address fields in checkout',
-        config.mhcd || false
-    )
-    .option('--no-mhcd', 'Displays address fields in checkout')
-    .option(
-        '--consumer',
-        'Automatically adds consumer object',
-        config.consumer || false
-    )
-    .option('--no-consumer', 'Automatically removes consumer object')
-    .option(
-        '--consumer-locale <locale>',
-        'Set consumer locale',
-        config.consumerLocale || 'sv'
-    )
-    .option(
-        '--consumer-type <type>',
-        'Set consumer type',
-        config.consumerType || 'B2C'
-    )
-    .option(
-        '--charge',
-        'Charge payment automatically if reserved',
-        config.charge || false
-    )
-    .option(
-        '--lang <string>',
-        'Set checkout language',
-        config.checkoutLanguage || 'en-GB'
-    )
-    .option('--test-secret-key <key>', 'Your test secret API key')
-    .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
-    .action((arg, options) => {
-        options.testSecretKey = options.testSecretKey
-            ? options.testSecretKey
-            : config.testSecretKey;
-        options.save = config.saveToCSV || options.save;
-        if (options.unscheduled || options.scheduled) {
-            runCreateSubscriptions(options, arg);
-        } else {
+        if (options.unscheduled && options.scheduled) {
             console.error(
-                'Error: Either the scheduled or unscheduled subscription must be true.'
+                'Error: Can not create both scheduled and unscheduled subscription for same payment ID.'
             );
             process.exit(1);
+        } else {
+            runCreateCompletedCheckout(options, arg);
         }
     });
 

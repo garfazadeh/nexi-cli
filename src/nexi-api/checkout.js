@@ -11,7 +11,8 @@ export async function checkoutPay(
     amount,
     expiryYear,
     expiryMonth,
-    testCardNumber
+    testCardNumber,
+    testCheckoutKey
 ) {
     const url = checkoutUrl + '/api/v1/pay';
     try {
@@ -38,7 +39,7 @@ export async function checkoutPay(
                 headers: {
                     'Content-Type': 'application/json',
                     paymentId: paymentId,
-                    CheckoutKey: config.paresCheckoutKey,
+                    CheckoutKey: testCheckoutKey,
                 },
             }
         );
@@ -58,7 +59,7 @@ export async function checkoutPay(
     }
 }
 
-export async function pares(paymentId, ThreedsSessionId) {
+export async function pares(paymentId, ThreedsSessionId, testCheckoutKey) {
     const url = checkoutUrl + '/api/v1/callback/pares';
     try {
         const response = await axios.post(
@@ -83,7 +84,7 @@ export async function pares(paymentId, ThreedsSessionId) {
             {
                 headers: {
                     paymentId: paymentId,
-                    CheckoutKey: config.paresCheckoutKey,
+                    CheckoutKey: testCheckoutKey,
                     'Content-Type': 'application/json',
                     'x-api-key': config.xApiKey,
                 },

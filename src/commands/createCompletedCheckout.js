@@ -1,3 +1,5 @@
+import util from 'node:util';
+
 import { createPayment, retrievePayment } from '../nexi-api/payment.js';
 import configPromise from '../utils/config.js';
 import finalizeCheckout from '../utils/finalizeCheckout.js';
@@ -34,23 +36,13 @@ export default async function runCreateCompletedCheckout(options, arg) {
             // finalize checkout
             const paid = await finalizeCheckout(
                 paymentId,
-                payload.order.amount
+                payload.order.amount,
+                options.testCheckoutKey
             );
 
             // fetch finalized payment
             const response = await retrievePayment(paymentId, options);
-
-            const { payment } = response.data;
-            const { orderDetails, paymentDetails, summary } = payment;
-            const formatAmount = amount =>
-                amount && amount !== 0 ? (amount / 100).toFixed(2) : 0;
-            responses.push({
-                paymentId: payment.paymentId,
-                currency: orderDetails.currency,
-                paymentMethod: paymentDetails.paymentMethod,
-                reservedAmount: formatAmount(summary.reservedAmount) || '',
-                chargedAmount: formatAmount(summary.chargedAmount) || '',
-            });
+            responses.push(response.data);
             updateLoader(i + 1, arg, 'Creating completed checkouts');
             await delay(setDelay);
         } catch (error) {
@@ -58,8 +50,42 @@ export default async function runCreateCompletedCheckout(options, arg) {
             console.error('Creation of completed checkouts failed:', error);
         }
     }
-    console.log('');
-    console.table(responses);
+    let tableContent = [];
+    if (options.table) {
+        tableContent = await responses.map(response => {
+            const { payment } = response;
+            const { orderDetails, paymentDetails, summary } = payment;
+            const formatAmount = amount =>
+                amount && amount !== 0 ? (amount / 100).toFixed(2) : 0;
+            const row = {
+                paymentId: payment.paymentId,
+                currency: orderDetails.currency,
+                paymentMethod: paymentDetails.paymentMethod,
+                reservedAmount: formatAmount(summary.reservedAmount) || '',
+                chargedAmount: formatAmount(summary.chargedAmount) || '',
+            };
+            if (payment.unscheduledSubscription) {
+                row.unscheduledSubscriptionId =
+                    payment.unscheduledSubscription.unscheduledSubscriptionId;
+            }
+            if (payment.subscription) {
+                row.scheduledSubscriptionId = payment.subscription.id;
+            }
+            return row;
+        });
+        console.log('\n');
+        console.table(tableContent);
+    } else {
+        const resultList = await responses.map(response => {
+            console.log(
+                util.inspect(response, {
+                    depth: null,
+                    colors: true,
+                    maxArrayLength: null,
+                })
+            );
+        });
+    }
 
     if (options.save) {
         // create fields for csv file

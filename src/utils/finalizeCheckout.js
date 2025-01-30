@@ -28,7 +28,11 @@ function generateCardExpiry(currentDate) {
     return { expiryYear, expiryMonth };
 }
 
-export default async function finalizeCheckout(paymentId, amount) {
+export default async function finalizeCheckout(
+    paymentId,
+    amount,
+    testCheckoutKey
+) {
     // get expiry date for card
     const { expiryYear, expiryMonth } = generateCardExpiry(currentDate);
 
@@ -37,14 +41,19 @@ export default async function finalizeCheckout(paymentId, amount) {
         amount,
         expiryYear,
         expiryMonth,
-        testCardNumber[Math.floor(Math.random() * testCardNumber.length)]
+        testCardNumber[Math.floor(Math.random() * testCardNumber.length)],
+        testCheckoutKey
     );
 
     // extract session id from redirect URL
     const ThreedsSessionId = redirectUrl.split('/')[4];
 
     // simulate 3DS callback
-    const paidPayment = await pares(paymentId, ThreedsSessionId);
+    const paidPayment = await pares(
+        paymentId,
+        ThreedsSessionId,
+        testCheckoutKey
+    );
 
     return paidPayment;
 }
