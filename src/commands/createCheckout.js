@@ -144,6 +144,8 @@ export default async function runCreateCheckout(options) {
                     paymentId: response.paymentId,
                     language: options.lang,
                     verbose: options.verbose,
+                    darkTheme: options.darkTheme,
+                    lightTheme: options.lightTheme,
                 };
 
                 try {

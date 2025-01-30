@@ -17,16 +17,16 @@
         />
         <style>
             /* Add this CSS to your stylesheet */
-            .button {
-                width: 89px;
-                height: 50px;
+            input {
+                pointer-events: none;
+                width: 262px !important;
             }
             .control.has-icons-left .icon.is-left,
             .control.has-icons-left .input:hover ~ .icon,
             .control.has-icons-left .select:hover ~ .icon,
             .control.has-icons-right .input:hover ~ .icon,
             .control.has-icons-right .select:hover ~ .icon {
-                color: var(--bulma-input-icon-focus-color);
+                color: var(--bulma-text);
             }
         </style>
     </head>
@@ -35,12 +35,14 @@
             <div class="column is-narrow">
                 <div class="column">
                     <div class="columns is-mobile is-vcentered is-centered m-2">
-                        <h3 class="subtitle is-size-4">Test Cards</h3>
+                        <h3 class="title has-text-weight-normal is-size-4">
+                            <i class="fa-regular fa-credit-card"></i> Test Cards
+                        </h3>
                     </div>
                     <ul class="m-5">
                         <li>
                             <div
-                                class="columns is-mobile is-vcentered is-centered"
+                                class="columns is-mobile is-vcentered is-centered is-1 mb-1"
                             >
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
@@ -59,14 +61,16 @@
                                         onclick="copyToClipboard('4268270087374847', this)"
                                         class="button copy-button is-medium"
                                     >
-                                        Copy
+                                        <span class="icon is-medium"
+                                            ><i class="fa-regular fa-copy"></i
+                                        ></span>
                                     </button>
                                 </div>
                             </div>
                         </li>
                         <li>
                             <div
-                                class="columns is-mobile is-vcentered is-centered"
+                                class="columns is-mobile is-vcentered is-centered is-1 mb-1"
                             >
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
@@ -85,14 +89,16 @@
                                         onclick="copyToClipboard('4925000000000061', this)"
                                         class="button copy-button is-medium"
                                     >
-                                        Copy
+                                        <span class="icon is-medium"
+                                            ><i class="fa-regular fa-copy"></i
+                                        ></span>
                                     </button>
                                 </div>
                             </div>
                         </li>
                         <li>
                             <div
-                                class="columns is-mobile is-vcentered is-centered"
+                                class="columns is-mobile is-vcentered is-centered is-1 mb-1"
                             >
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
@@ -111,14 +117,16 @@
                                         onclick="copyToClipboard('4925000000000079', this)"
                                         class="button copy-button is-medium"
                                     >
-                                        Copy
+                                        <span class="icon is-medium"
+                                            ><i class="fa-regular fa-copy"></i
+                                        ></span>
                                     </button>
                                 </div>
                             </div>
                         </li>
                         <li>
                             <div
-                                class="columns is-mobile is-vcentered is-centered"
+                                class="columns is-mobile is-vcentered is-centered is-1 mb-1"
                             >
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
@@ -137,14 +145,16 @@
                                         onclick="copyToClipboard('4925000000000087', this)"
                                         class="button copy-button is-medium"
                                     >
-                                        Copy
+                                        <span class="icon is-medium"
+                                            ><i class="fa-regular fa-copy"></i
+                                        ></span>
                                     </button>
                                 </div>
                             </div>
                         </li>
                         <li>
                             <div
-                                class="columns is-mobile is-vcentered is-centered"
+                                class="columns is-mobile is-vcentered is-centered is-1 mb-1"
                             >
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
@@ -165,14 +175,16 @@
                                         onclick="copyToClipboard('5213199803453465', this)"
                                         class="button copy-button is-medium"
                                     >
-                                        Copy
+                                        <span class="icon is-medium"
+                                            ><i class="fa-regular fa-copy"></i
+                                        ></span>
                                     </button>
                                 </div>
                             </div>
                         </li>
                         <li>
                             <div
-                                class="columns is-mobile is-vcentered is-centered"
+                                class="columns is-mobile is-vcentered is-centered is-1 mb-1"
                             >
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
@@ -193,14 +205,16 @@
                                         onclick="copyToClipboard('5544330000000235', this)"
                                         class="button copy-button is-medium"
                                     >
-                                        Copy
+                                        <span class="icon is-medium"
+                                            ><i class="fa-regular fa-copy"></i
+                                        ></span>
                                     </button>
                                 </div>
                             </div>
                         </li>
                         <li>
                             <div
-                                class="columns is-mobile is-vcentered is-centered"
+                                class="columns is-mobile is-vcentered is-centered is-1 mb-1"
                             >
                                 <div class="column is-narrow">
                                     <p class="control has-icons-left">
@@ -219,7 +233,9 @@
                                         onclick="copyToClipboard('376206000000009', this)"
                                         class="button copy-button is-medium"
                                     >
-                                        Copy
+                                        <span class="icon is-medium"
+                                            ><i class="fa-regular fa-copy"></i
+                                        ></span>
                                     </button>
                                 </div>
                             </div>
@@ -236,6 +252,7 @@
         <script>
             // Global variable to store the checkout instance
             let checkout = null;
+            let config = null;
 
             // Function to clean up the checkout instance
             function cleanupCheckout() {
@@ -340,7 +357,10 @@
             function fetchAndInitializeCheckout() {
                 fetch('/data', { method: 'GET' })
                     .then(response => response.json())
-                    .then(config => initializeCheckout(config))
+                    .then(externalConfig => {
+                        initializeCheckout(externalConfig);
+                        config = externalConfig;
+                    })
                     .catch(error => console.error('Error:', error));
             }
 
@@ -354,7 +374,7 @@
                     .then(() => {
                         console.log('Text copied to clipboard:', text);
                         button.innerHTML =
-                            '<span class="icon"><i class="fa-solid fa-check"></i></span>'; // Show only the checkmark icon
+                            '<span class="icon is-medium"><i class="fa-solid fa-check"></i></span>'; // Show only the checkmark icon
                         button.classList.add('is-success');
                         // Set a timeout to revert the button text after 1 second
                         setTimeout(() => {
@@ -372,20 +392,8 @@
                 const theme = document.documentElement.classList.contains(
                     'dark'
                 )
-                    ? {
-                          useLightIcons: true,
-                          backgroundColor: 'rgb(20, 22, 26)',
-                          panelColor: 'rgb(36, 41, 46)',
-                          textColor: 'rgb(200,200,200)',
-                          panelTextColor: 'rgb(200,200,200)',
-                          primaryColor: 'rgb(102, 120, 255)',
-                          linkColor: 'rgb(102, 120, 255)',
-                          buttonbackgroundColor: 'rgb(102, 120, 255)',
-                          primaryOutlineColor: 'rgb(102, 120, 255)',
-                          outlineColor: 'rgb(31, 34, 41)',
-                          panelLinkColor: 'rgb(102, 120, 255)',
-                      }
-                    : 'light';
+                    ? config.darkTheme
+                    : config.lightTheme;
                 checkout.setTheme(theme);
             }
 

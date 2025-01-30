@@ -129,14 +129,18 @@ export async function terminatePayment(paymentId, options) {
     const url =
         environmentConfig.baseUrl + '/payments/' + paymentId + '/terminate';
     try {
-        const response = await axios.put(url, {
-            headers: {
-                Authorization: environmentConfig.key,
-                CommercePlatformTag: 'nexi-cli',
-            },
-            timeout: 5000,
-        });
-        return response.data;
+        const response = await axios.put(
+            url,
+            {},
+            {
+                headers: {
+                    Authorization: environmentConfig.key,
+                    CommercePlatformTag: 'nexi-cli',
+                },
+                timeout: 5000,
+            }
+        );
+        return response;
     } catch (error) {
         errorHandling(error);
         process.exit(1);

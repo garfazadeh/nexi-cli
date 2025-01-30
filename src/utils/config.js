@@ -5,34 +5,67 @@ import { join } from 'path';
 const configDir = join(process.env.HOME, '.config', 'nexi-cli');
 const configFile = join(configDir, 'config.yml');
 
+const defaultConfig = {
+    prodSecretKey: '',
+    prodCheckoutKey: '',
+    testSecretKey: '',
+    testCheckoutKey: '',
+    isTest: true,
+    requestLimit: 5,
+    saveToCSV: false,
+    xApiKey: '',
+    currency: 'EUR',
+    charge: false,
+    checkoutLanguage: 'en-GB',
+    consumer: true,
+    consumerLocale: 'sv',
+    consumerType: 'B2C',
+    mhcd: true,
+    port: 8080,
+    verbose: false,
+    darkTheme: {
+        fontFamily: 'Inter',
+        useLightIcons: true,
+        backgroundColor: 'rgb(20, 22, 26)',
+        panelColor: 'rgb(36, 41, 46)',
+        textColor: 'rgb(200,200,200)',
+        panelTextColor: 'rgb(200,200,200)',
+        primaryColor: 'rgb(72, 199, 142)',
+        linkColor: 'rgb(72, 199, 142)',
+        buttonbackgroundColor: 'rgb(72, 199, 142)',
+        buttonTextColor: 'rgb(20, 22, 26)',
+        primaryOutlineColor: 'rgb(72, 199, 142)',
+        outlineColor: 'rgb(31, 34, 41)',
+        panelLinkColor: 'rgb(72, 199, 142)',
+        buttonRadius: '0.5em',
+    },
+    lightTheme: {
+        fontFamily: 'Inter',
+        useLightIcons: false,
+        buttonRadius: '0.5em',
+        primaryColor: 'rgb(72, 199, 142)',
+        buttonbackgroundColor: 'rgb(72, 199, 142)',
+        buttonTextColor: 'rgb(20, 22, 26)',
+    },
+};
+
 async function checkAndCreateConfig() {
     try {
         await fs.mkdir(configDir, { recursive: true });
 
-        if (!(await fileExists(configFile))) {
-            const defaultConfig = {
-                prodSecretKey: '',
-                prodCheckoutKey: '',
-                testSecretKey: '',
-                testCheckoutKey: '',
-                isTest: true,
-                requestLimit: 5,
-                saveToCSV: false,
-                xApiKey: '',
-                currency: 'SEK',
-                charge: false,
-                checkoutLanguage: 'sv-SE',
-                consumer: true,
-                consumerLocale: 'sv',
-                consumerType: 'B2C',
-                mhcd: true,
-                port: 8080,
-                verbose: false,
-            };
-            await fs.writeFile(configFile, yaml.dump(defaultConfig), 'utf-8');
+        let config = {};
+        if (await fileExists(configFile)) {
+            const configContent = await fs.readFile(configFile, 'utf-8');
+            config = yaml.load(configContent) || {};
         }
+
+        // Merge existing config with default config, preserving existing values
+        const mergedConfig = { ...defaultConfig, ...config };
+
+        // Write the merged config back to the file
+        await fs.writeFile(configFile, yaml.dump(mergedConfig), 'utf-8');
     } catch (error) {
-        console.error('Error creating config file:', error);
+        console.error('Error creating or updating config file:', error);
     }
 }
 

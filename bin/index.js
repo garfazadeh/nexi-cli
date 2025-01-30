@@ -6,6 +6,7 @@ import runCreateCheckout from '../src/commands/createCheckout.js';
 import runCreateCompletedCheckout from '../src/commands/createCompletedCheckout.js';
 import runCreatePayload from '../src/commands/createPayload.js';
 import runFetchPayment from '../src/commands/fetchPayment.js';
+import runTerminatePayment from '../src/commands/terminatePayment.js';
 import configPromise from '../src/utils/config.js';
 
 // Read and use the config file
@@ -152,6 +153,8 @@ program
         options.production = options.production
             ? options.production
             : !config.isTest;
+        options.darkTheme = config.darkTheme;
+        options.lightTheme = config.lightTheme;
         options.verbose = options.verbose ? options.verbose : config.verbose;
         runCreateCheckout(options);
     });
@@ -219,4 +222,33 @@ program
         }
     });
 
+program
+    .command('terminate-payment')
+    .argument('[paymentId]', 'Payment ID')
+    .description('Terminate payment information individually or in bulk')
+    .option('-f, --file <path>', 'Path to file containing list of payment ID')
+    .option('--prod-secret-key <key>', 'Your production secret API key')
+    .option('--test-secret-key <key>', 'Your test secret API key')
+    .option('-p, --production', 'Use production environment', !config.isTest)
+    .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
+    .option('-t, --table', 'Display results in a table')
+    .action((arg, options) => {
+        if (!arg && !options.file) {
+            console.error(
+                'Error: Either the argument or the file option must be set.'
+            );
+            process.exit(1);
+        }
+        options.prodSecretKey = options.prodSecretKey
+            ? options.prodSecretKey
+            : config.prodSecretKey;
+        options.testSecretKey = options.testSecretKey
+            ? options.testSecretKey
+            : config.testSecretKey;
+        options.production = options.production
+            ? options.production
+            : !config.isTest;
+        options.save = options.save ? options.save : config.saveToCSV;
+        runTerminatePayment(options, arg);
+    });
 program.parse(process.argv);
