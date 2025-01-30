@@ -47,7 +47,10 @@ export default async function runCreateCompletedCheckout(options, arg) {
             await delay(setDelay);
         } catch (error) {
             // Handle any errors that may be thrown during the process
-            console.error('Creation of completed checkouts failed:', error);
+            console.error(
+                'Creation of completed checkouts failed:',
+                error.response.statusText
+            );
         }
     }
     let tableContent = [];
