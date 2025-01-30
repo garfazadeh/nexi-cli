@@ -44,8 +44,11 @@ export async function checkoutPay(
         });
         return response.data.redirectUrl;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('\nError: The supplied checkout key is incorrect.');
+        if (error.response) {
+            console.error(
+                chalk.red.bold(`\nERROR: HTTP ${error.response.status}`) +
+                    `\n${error.response.statusText}`
+            );
         } else if (error.code === 'ECONNABORTED') {
             console.error(chalk.red.bold('ERROR: Request timed out'));
         } else {
@@ -59,7 +62,7 @@ export async function checkoutPay(
                     `\nError posting ${url}\nPayload:\n${payloadLog}`
             );
         }
-        throw error;
+        process.exit(1);
     }
 }
 
@@ -92,10 +95,13 @@ export async function pares(paymentId, ThreedsSessionId, testCheckoutKey) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied checkout key is incorrect.');
+        if (error.response) {
+            console.error(
+                chalk.red.bold(`\nERROR: HTTP ${error.response.status}`) +
+                    `\n${error.response.statusText}`
+            );
         } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('\nERROR: Request timed out'));
+            console.error(chalk.red.bold('ERROR: Request timed out'));
         } else {
             const payloadLog = util.inspect(payload, {
                 depth: null,
@@ -107,6 +113,6 @@ export async function pares(paymentId, ThreedsSessionId, testCheckoutKey) {
                     `\nError posting ${url}\nPayload:\n${payloadLog}`
             );
         }
-        throw error;
+        process.exit(1);
     }
 }

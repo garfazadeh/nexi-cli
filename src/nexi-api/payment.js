@@ -11,6 +11,23 @@ function getBaseUrlAndCredentials(options) {
     };
 }
 
+function errorHandling(error) {
+    if (error.response) {
+        console.error(
+            chalk.red.bold(`\nERROR: HTTP ${error.response.status}`) +
+                chalk.red.bold(`\n${error.response.statusText}`) +
+                chalk.bold('\nURL: ') +
+                error.response.config.url +
+                chalk.bold('\nMethod: ') +
+                error.response.config.method.toUpperCase() +
+                chalk.bold('\nHeaders:\n') +
+                error.response.config.headers
+        );
+    } else if (error.code === 'ECONNABORTED') {
+        console.error(chalk.red.bold('ERROR: Request timed out'));
+    }
+}
+
 export async function retrievePayment(paymentId, options) {
     const environmentConfig = getBaseUrlAndCredentials(options);
     const url = environmentConfig.baseUrl + '/payments/' + paymentId;
@@ -24,17 +41,8 @@ export async function retrievePayment(paymentId, options) {
         });
         return response;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -51,17 +59,8 @@ export async function createPayment(payload, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -82,17 +81,8 @@ export async function updateReference(paymentId, payload, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -110,17 +100,8 @@ export async function updateOrder(paymentId, payload, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -138,17 +119,8 @@ export async function updateMyReference(paymentId, payload, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -166,17 +138,8 @@ export async function terminatePayment(paymentId, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -194,17 +157,8 @@ export async function cancelPayment(paymentId, payload, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -222,17 +176,8 @@ export async function chargePayment(paymentId, payload, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -249,17 +194,8 @@ export async function retrieveCharge(chargeId, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -276,17 +212,8 @@ export async function refundCharge(chargeId, payload, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -304,17 +231,8 @@ export async function refundPayment(paymentId, payload, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -331,17 +249,8 @@ export async function retrieveRefund(refundId, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }
 
@@ -359,16 +268,7 @@ export async function cancelPendingRefund(refundId, options) {
         });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.error('Error: The supplied API key is incorrect.');
-        } else if (error.code === 'ECONNABORTED') {
-            console.error(chalk.red.bold('ERROR: Request timed out'));
-        } else {
-            console.error(
-                chalk.red.bold(`ERROR: HTTP ${error.response.status}`) +
-                    `\nError fetching ${url}`
-            );
-        }
-        throw error;
+        errorHandling(error);
+        process.exit(1);
     }
 }

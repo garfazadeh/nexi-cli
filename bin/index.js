@@ -131,19 +131,28 @@ program
         config.checkoutLanguage || 'en-GB'
     )
     .option('--prod-secret-key <string>', 'Your production secret API key')
+    .option('--prod-checkout-key <string>', 'Your production checkout key')
     .option('--test-secret-key <string>', 'Your test secret API key')
+    .option('--test-checkout-key <string>', 'Your test checkout key')
     .option('-p, --production', 'Use production environment')
     .option('-v, --verbose', 'Output additional information')
     .action(options => {
         options.prodSecretKey = options.prodSecretKey
             ? options.prodSecretKey
             : config.prodSecretKey;
+        options.prodCheckoutKey = options.prodCheckoutKey
+            ? options.prodCheckoutKey
+            : config.prodCheckoutKey;
         options.testSecretKey = options.testSecretKey
             ? options.testSecretKey
             : config.testSecretKey;
+        options.testCheckoutKey = options.testCheckoutKey
+            ? options.testCheckoutKey
+            : config.testCheckoutKey;
         options.production = options.production
             ? options.production
             : !config.isTest;
+        options.verbose = options.verbose ? options.verbose : config.verbose;
         runCreateCheckout(options);
     });
 
@@ -199,6 +208,7 @@ program
             ? options.testCheckoutKey
             : config.testCheckoutKey;
         options.save = config.saveToCSV || options.save;
+        options.verbose = options.verbose ? options.verbose : config.verbose;
         if (options.unscheduled && options.scheduled) {
             console.error(
                 'Error: Can not create both scheduled and unscheduled subscription for same payment ID.'

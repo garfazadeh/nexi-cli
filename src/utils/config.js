@@ -27,6 +27,7 @@ async function checkAndCreateConfig() {
                 consumerType: 'B2C',
                 mhcd: true,
                 port: 8080,
+                verbose: false,
             };
             await fs.writeFile(configFile, yaml.dump(defaultConfig), 'utf-8');
         }

@@ -138,8 +138,8 @@ export default async function runCreateCheckout(options) {
 
                 const postData = {
                     checkoutKey: options.production
-                        ? config.prodCheckoutKey
-                        : config.testCheckoutKey,
+                        ? options.prodCheckoutKey
+                        : options.testCheckoutKey,
                     environment: options.production,
                     paymentId: response.paymentId,
                     language: options.lang,
@@ -157,17 +157,23 @@ export default async function runCreateCheckout(options) {
                 } catch (error) {
                     if (error.response && error.response.status === 401) {
                         console.error(
-                            'Error: The supplied API key is incorrect.'
+                            '\nError: The supplied checkout key is incorrect.'
                         );
                     } else if (error.code === 'ECONNABORTED') {
                         console.error(
                             chalk.red.bold('ERROR: Request timed out')
                         );
                     } else {
+                        const payloadLog = util.inspect(postData, {
+                            depth: null,
+                            colors: true,
+                            maxArrayLength: null,
+                        });
                         console.error(
                             chalk.red.bold(
-                                `ERROR: HTTP ${error.response.status}`
-                            ) + `\nError fetching ${url}`
+                                `\nERROR: HTTP ${error.response.status}`
+                            ) +
+                                `\nError posting ${url}\nPayload:\n${payloadLog}`
                         );
                     }
                     throw error;
