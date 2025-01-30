@@ -23,7 +23,7 @@
         "express": "^4.21.2",
         "js-yaml": "^4.1.0",
         "json2csv": "^6.0.0-alpha.2",
-        "localtunnel": "^1.8.3"
+        "localtunnel": "^2.0.2"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
