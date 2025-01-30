@@ -88,11 +88,11 @@ Arguments:
 
 Options:
   -f, --file <path>        Path to file containing list of payment ID
-  --prod-secret-key <key>  Your production secret API key
-  --test-secret-key <key>  Your test secret API key
   -p, --production         Use production environment (default: false)
+  --prod-secret-key <key>  Your production secret API key
   -s, --save               Save table to CSV-file (default: false)
   -t, --table              Display results in a table
+  --test-secret-key <key>  Your test secret API key
   -h, --help               display help for command
 ```
 
@@ -104,15 +104,16 @@ Usage: nexi-cli create-payload [options]
 Returns a payload for a create payment request
 
 Options:
+  -C, --charge                Charge payment automatically if reserved (default:
+                              true)
   -c, --currency <code>       Set checkout currency (default: "SEK")
-  -H, --hosted                Hosted mode provides checkout link
-  -m, --mhcd                  Hides address fields in checkout (default: true)
-  --no-mhcd                   Displays address fields in checkout
   --consumer                  Automatically adds consumer object (default: true)
-  --no-consumer               Automatically removes consumer object
   --consumer-locale <locale>  Set consumer locale (default: "sv")
   --consumer-type <type>      Set consumer type (default: "B2C")
-  --charge                    Charge payment automatically if reserved (default: true)
+  -H, --hosted                Hosted mode provides checkout link
+  -m, --mhcd                  Hides address fields in checkout (default: true)
+  --no-consumer               Automatically removes consumer object
+  --no-mhcd                   Displays address fields in checkout
   -h, --help                  display help for command
 ```
 
@@ -124,22 +125,23 @@ Usage: nexi-cli create-checkout [options]
 Create a embedded checkout or URL
 
 Options:
+  -C, --charge                  Charge payment automatically if reserved
+                                (default: true)
   -c, --currency <code>         Set checkout currency (default: "SEK")
-  -H, --hosted                  Hosted mode provides checkout link
-  -m, --mhcd                    Hides address fields in checkout (default: true)
-  --no-mhcd                     Displays address fields in checkout
-  --consumer                    Automatically adds consumer object (default: true)
-  --no-consumer                 Automatically removes consumer object
+  --consumer                    Automatically adds consumer object (default:
+                                true)
   --consumer-locale <locale>    Set consumer locale (default: "sv")
   --consumer-type <type>        Set consumer type (default: "B2C")
-  --charge                      Charge payment automatically if reserved (default:
-                                true)
+  -H, --hosted                  Hosted mode provides checkout link
   --lang <string>               Set checkout language (default: "sv-SE")
-  --prod-secret-key <string>    Your production secret API key
-  --prod-checkout-key <string>  Your production checkout key
-  --test-secret-key <string>    Your test secret API key
-  --test-checkout-key <string>  Your test checkout key
+  -m, --mhcd                    Hides address fields in checkout (default: true)
+  --no-consumer                 Automatically removes consumer object
+  --no-mhcd                     Displays address fields in checkout
   -p, --production              Use production environment
+  --prod-checkout-key <string>  Your production checkout key
+  --prod-secret-key <string>    Your production secret API key
+  --test-checkout-key <string>  Your test checkout key
+  --test-secret-key <string>    Your test secret API key
   -v, --verbose                 Output additional information
   -h, --help                    display help for command
 ```
@@ -155,21 +157,22 @@ Arguments:
   number                      Number of checkouts
 
 Options:
+  -C, --charge                Charge payment automatically if reserved (default:
+                              true)
   -c, --currency <code>       Set checkout currency (default: "SEK")
-  -H, --hosted                Hosted mode provides checkout link
-  -m, --mhcd                  Hides address fields in checkout (default: true)
-  --no-mhcd                   Displays address fields in checkout
   --consumer                  Automatically adds consumer object (default: true)
-  --no-consumer               Automatically removes consumer object
   --consumer-locale <locale>  Set consumer locale (default: "sv")
   --consumer-type <type>      Set consumer type (default: "B2C")
-  --charge                    Charge payment automatically if reserved (default: true)
-  -u, --unscheduled           Create unscheduled subscription
-  -S, --scheduled             Create scheduled subscription
-  --test-secret-key <key>     Your test secret API key
-  --test-checkout-key <key>   Your test checkout API key
+  -H, --hosted                Hosted mode provides checkout link
+  -m, --mhcd                  Hides address fields in checkout (default: true)
+  --no-consumer               Automatically removes consumer object
+  --no-mhcd                   Displays address fields in checkout
   -s, --save                  Save table to CSV-file (default: false)
+  -S, --scheduled             Create scheduled subscription
   -t, --table                 Display results in a table
+  --test-checkout-key <key>   Your test checkout API key
+  --test-secret-key <key>     Your test secret API key
+  -u, --unscheduled           Create unscheduled subscription
   -v, --verbose               Output additional information (default: true)
   -h, --help                  display help for command
 ```
@@ -186,11 +189,11 @@ Arguments:
 
 Options:
   -f, --file <path>        Path to file containing list of payment ID
-  --prod-secret-key <key>  Your production secret API key
-  --test-secret-key <key>  Your test secret API key
   -p, --production         Use production environment (default: false)
+  --prod-secret-key <key>  Your production secret API key
   -s, --save               Save table to CSV-file (default: false)
   -t, --table              Display results in a table
+  --test-secret-key <key>  Your test secret API key
   -h, --help               display help for command
 ```
 

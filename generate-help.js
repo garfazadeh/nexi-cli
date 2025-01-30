@@ -25,7 +25,7 @@ let readmeContent = fs.readFileSync(readmePath, 'utf8');
 // Generate help output for each command and update the README.md
 commands.forEach(({ name, section }) => {
     const helpOutput = execSync(`nexi-cli ${name} --help`).toString();
-    const startMarker = `### ${section}\n\`\`\``;
+    const startMarker = `### ${section}\n\n\`\`\``;
     const endMarker = '```';
     const startIndex = readmeContent.indexOf(startMarker);
     const endIndex = readmeContent.indexOf(
