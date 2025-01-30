@@ -18,6 +18,15 @@
         "^components/(.*)$",
         "^[./]"
     ],
+    "overrides": [
+        {
+            "files": "*.yaml",
+            "options": {
+                "tabWidth": 2, // Use 2 spaces (default)
+                "useTabs": false // Ensure tabs are not used
+            }
+        }
+    ],
     "importOrderSeparation": true,
     "importOrderSortSpecifiers": true,
     "plugins": [

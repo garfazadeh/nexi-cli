@@ -6,22 +6,21 @@ const configDir = join(process.env.HOME, '.config', 'nexi-cli');
 const configFile = join(configDir, 'config.yml');
 
 const defaultConfig = {
-    prodSecretKey: '',
-    prodCheckoutKey: '',
-    testSecretKey: '',
-    testCheckoutKey: '',
-    production: false,
-    requestLimit: 5,
-    export: false,
-    xApiKey: '',
-    currency: 'USD',
     charge: false,
     checkoutLanguage: 'en-GB',
     consumer: true,
     consumerLocale: 'en',
     consumerType: 'B2C',
+    currency: 'USD',
+    export: false,
     mhcd: true,
     port: 8080,
+    prodCheckoutKey: '',
+    prodSecretKey: '',
+    production: false,
+    requestLimit: 5,
+    testCheckoutKey: '',
+    testSecretKey: '',
     themeDark: {
         backgroundColor: 'rgb(20, 22, 26)',
         buttonbackgroundColor: 'rgb(72, 199, 142)',
@@ -38,6 +37,7 @@ const defaultConfig = {
     },
     themeLight: {},
     verbose: false,
+    xApiKey: '',
 };
 
 async function checkAndCreateConfig() {

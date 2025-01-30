@@ -26,32 +26,37 @@ $ npm install
    your keys.
 
 ```yml
-requestLimit: 5
-export: false
-xApiKey:
-currency: USD
 charge: false
 checkoutLanguage: en-GB
 consumer: true
 consumerLocale: en
 consumerType: B2C
+currency: USD
+export: false
 mhcd: true
 port: 8080
+prodCheckoutKey:
+prodSecretKey:
+production: false
+requestLimit: 5
+testCheckoutKey:
+testSecretKey:
 themeDark:
-    backgroundColor: rgb(20, 22, 26)
-    buttonbackgroundColor: rgb(72, 199, 142)
-    buttonTextColor: rgb(20, 22, 26)
-    linkColor: rgb(72, 199, 142)
-    outlineColor: rgb(31, 34, 41)
-    panelColor: rgb(36, 41, 46)
-    panelLinkColor: rgb(72, 199, 142)
-    panelTextColor: rgb(200,200,200)
-    primaryColor: rgb(72, 199, 142)
-    primaryOutlineColor: rgb(72, 199, 142)
-    textColor: rgb(200,200,200)
-    useLightIcons: true
+  backgroundColor: rgb(20, 22, 26)
+  buttonbackgroundColor: rgb(72, 199, 142)
+  buttonTextColor: rgb(20, 22, 26)
+  linkColor: rgb(72, 199, 142)
+  outlineColor: rgb(31, 34, 41)
+  panelColor: rgb(36, 41, 46)
+  panelLinkColor: rgb(72, 199, 142)
+  panelTextColor: rgb(200,200,200)
+  primaryColor: rgb(72, 199, 142)
+  primaryOutlineColor: rgb(72, 199, 142)
+  textColor: rgb(200,200,200)
+  useLightIcons: true
 themeLight: {}
 verbose: false
+xApiKey:
 ```
 
 4.  Make CLI accessible globally
