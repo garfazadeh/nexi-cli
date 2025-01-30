@@ -33,8 +33,8 @@ testCheckoutKey:
 isTest: true
 requestLimit: 5
 saveToCSV: false
-xApiKey: 
-currency: SEK
+xApiKey:
+curr: SEK
 charge: true
 checkoutLanguage: sv-SE
 consumer: true
