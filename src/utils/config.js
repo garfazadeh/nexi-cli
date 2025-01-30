@@ -22,7 +22,6 @@ const defaultConfig = {
     consumerType: 'B2C',
     mhcd: true,
     port: 8080,
-    verbose: false,
     themeDark: {
         backgroundColor: 'rgb(20, 22, 26)',
         buttonbackgroundColor: 'rgb(72, 199, 142)',
@@ -38,6 +37,7 @@ const defaultConfig = {
         useLightIcons: true,
     },
     themeLight: {},
+    verbose: false,
 };
 
 async function checkAndCreateConfig() {
