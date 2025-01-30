@@ -25,11 +25,11 @@ program
     .argument('[paymentId]', 'Payment ID')
     .description('Fetch payment information individually or in bulk')
     .option('-f, --file <path>', 'Path to file containing list of payment ID')
-    .option('--prod-secret-key <key>', 'Your production secret API key')
-    .option('--test-secret-key <key>', 'Your test secret API key')
     .option('-p, --production', 'Use production environment', !config.isTest)
+    .option('--prod-secret-key <key>', 'Your production secret API key')
     .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
     .option('-t, --table', 'Display results in a table')
+    .option('--test-secret-key <key>', 'Your test secret API key')
     .action((arg, options) => {
         if (!arg && !options.file) {
             console.error(
@@ -54,23 +54,20 @@ program
     .command('create-payload')
     .description('Returns a payload for a create payment request')
     .option(
+        '-C, --charge',
+        'Charge payment automatically if reserved',
+        config.charge || false
+    )
+    .option(
         '-c, --currency <code>',
         'Set checkout currency',
         config.currency || 'EUR'
     )
-    .option('-h, --hosted', 'Hosted mode provides checkout link')
-    .option(
-        '-m, --mhcd',
-        'Hides address fields in checkout',
-        config.mhcd || false
-    )
-    .option('--no-mhcd', 'Displays address fields in checkout')
     .option(
         '--consumer',
         'Automatically adds consumer object',
         config.consumer || false
     )
-    .option('--no-consumer', 'Automatically removes consumer object')
     .option(
         '--consumer-locale <locale>',
         'Set consumer locale',
@@ -81,11 +78,14 @@ program
         'Set consumer type',
         config.consumerType || 'B2C'
     )
+    .option('-H, --hosted', 'Hosted mode provides checkout link')
     .option(
-        '--charge',
-        'Charge payment automatically if reserved',
-        config.charge || false
+        '-m, --mhcd',
+        'Hides address fields in checkout',
+        config.mhcd || false
     )
+    .option('--no-consumer', 'Automatically removes consumer object')
+    .option('--no-mhcd', 'Displays address fields in checkout')
     .action(options => {
         runCreatePayload(options);
     });
@@ -94,23 +94,20 @@ program
     .command('create-checkout')
     .description('Create a embedded checkout or URL')
     .option(
+        '-C, --charge',
+        'Charge payment automatically if reserved',
+        config.charge || false
+    )
+    .option(
         '-c, --currency <code>',
         'Set checkout currency',
         config.currency || 'EUR'
     )
-    .option('-h, --hosted', 'Hosted mode provides checkout link')
-    .option(
-        '-m, --mhcd',
-        'Hides address fields in checkout',
-        config.mhcd || false
-    )
-    .option('--no-mhcd', 'Displays address fields in checkout')
     .option(
         '--consumer',
         'Automatically adds consumer object',
         config.consumer || false
     )
-    .option('--no-consumer', 'Automatically removes consumer object')
     .option(
         '--consumer-locale <locale>',
         'Set consumer locale',
@@ -121,21 +118,24 @@ program
         'Set consumer type',
         config.consumerType || 'B2C'
     )
-    .option(
-        '--charge',
-        'Charge payment automatically if reserved',
-        config.charge || false
-    )
+    .option('-H, --hosted', 'Hosted mode provides checkout link')
     .option(
         '--lang <string>',
         'Set checkout language',
         config.checkoutLanguage || 'en-GB'
     )
-    .option('--prod-secret-key <string>', 'Your production secret API key')
-    .option('--prod-checkout-key <string>', 'Your production checkout key')
-    .option('--test-secret-key <string>', 'Your test secret API key')
-    .option('--test-checkout-key <string>', 'Your test checkout key')
+    .option(
+        '-m, --mhcd',
+        'Hides address fields in checkout',
+        config.mhcd || false
+    )
+    .option('--no-consumer', 'Automatically removes consumer object')
+    .option('--no-mhcd', 'Displays address fields in checkout')
     .option('-p, --production', 'Use production environment')
+    .option('--prod-checkout-key <string>', 'Your production checkout key')
+    .option('--prod-secret-key <string>', 'Your production secret API key')
+    .option('--test-checkout-key <string>', 'Your test checkout key')
+    .option('--test-secret-key <string>', 'Your test secret API key')
     .option('-v, --verbose', 'Output additional information')
     .action(options => {
         options.prodSecretKey = options.prodSecretKey
@@ -164,23 +164,20 @@ program
     .argument('[number]', 'Number of checkouts')
     .description('Create completed checkout in test environment')
     .option(
+        '-C, --charge',
+        'Charge payment automatically if reserved',
+        config.charge || false
+    )
+    .option(
         '-c, --currency <code>',
         'Set checkout currency',
         config.currency || 'EUR'
     )
-    .option('-h, --hosted', 'Hosted mode provides checkout link')
-    .option(
-        '-m, --mhcd',
-        'Hides address fields in checkout',
-        config.mhcd || false
-    )
-    .option('--no-mhcd', 'Displays address fields in checkout')
     .option(
         '--consumer',
         'Automatically adds consumer object',
         config.consumer || false
     )
-    .option('--no-consumer', 'Automatically removes consumer object')
     .option(
         '--consumer-locale <locale>',
         'Set consumer locale',
@@ -191,17 +188,20 @@ program
         'Set consumer type',
         config.consumerType || 'B2C'
     )
+    .option('-H, --hosted', 'Hosted mode provides checkout link')
     .option(
-        '--charge',
-        'Charge payment automatically if reserved',
-        config.charge || false
+        '-m, --mhcd',
+        'Hides address fields in checkout',
+        config.mhcd || false
     )
-    .option('-u, --unscheduled', 'Create unscheduled subscription')
-    .option('-S, --scheduled', 'Create scheduled subscription')
-    .option('--test-secret-key <key>', 'Your test secret API key')
-    .option('--test-checkout-key <key>', 'Your test checkout API key')
+    .option('--no-consumer', 'Automatically removes consumer object')
+    .option('--no-mhcd', 'Displays address fields in checkout')
     .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
+    .option('-S, --scheduled', 'Create scheduled subscription')
     .option('-t, --table', 'Display results in a table')
+    .option('--test-checkout-key <key>', 'Your test checkout API key')
+    .option('--test-secret-key <key>', 'Your test secret API key')
+    .option('-u, --unscheduled', 'Create unscheduled subscription')
     .option('-v, --verbose', 'Output additional information', config.verbose)
     .action((arg, options) => {
         options.testSecretKey = options.testSecretKey
@@ -227,11 +227,11 @@ program
     .argument('[paymentId]', 'Payment ID')
     .description('Terminate payment information individually or in bulk')
     .option('-f, --file <path>', 'Path to file containing list of payment ID')
-    .option('--prod-secret-key <key>', 'Your production secret API key')
-    .option('--test-secret-key <key>', 'Your test secret API key')
     .option('-p, --production', 'Use production environment', !config.isTest)
+    .option('--prod-secret-key <key>', 'Your production secret API key')
     .option('-s, --save', 'Save table to CSV-file', config.saveToCSV)
     .option('-t, --table', 'Display results in a table')
+    .option('--test-secret-key <key>', 'Your test secret API key')
     .action((arg, options) => {
         if (!arg && !options.file) {
             console.error(
@@ -251,4 +251,5 @@ program
         options.save = options.save ? options.save : config.saveToCSV;
         runTerminatePayment(options, arg);
     });
+
 program.parse(process.argv);

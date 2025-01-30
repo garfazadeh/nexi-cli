@@ -72,7 +72,8 @@ Commands:
   create-payload [options]                      Returns a payload for a create payment request
   create-checkout [options]                     Create a embedded checkout or URL
   create-completed-checkout [options] [number]  Create completed checkout in test environment
-  help [command]                                display help for command                  display help for command
+  terminate-payment [options] [paymentId]       Terminate payment information individually or in bulk
+  help [command]                                display help for command
 ```
 
 ### fetch-payment
@@ -104,7 +105,7 @@ Returns a payload for a create payment request
 
 Options:
   -c, --currency <code>       Set checkout currency (default: "SEK")
-  -h, --hosted                Hosted mode provides checkout link
+  -H, --hosted                Hosted mode provides checkout link
   -m, --mhcd                  Hides address fields in checkout (default: true)
   --no-mhcd                   Displays address fields in checkout
   --consumer                  Automatically adds consumer object (default: true)
@@ -112,7 +113,7 @@ Options:
   --consumer-locale <locale>  Set consumer locale (default: "sv")
   --consumer-type <type>      Set consumer type (default: "B2C")
   --charge                    Charge payment automatically if reserved (default: true)
-  --help                      display help for command
+  -h, --help                  display help for command
 ```
 
 ### create-checkout
@@ -123,21 +124,24 @@ Usage: nexi-cli create-checkout [options]
 Create a embedded checkout or URL
 
 Options:
-  -c, --currency <code>       Set checkout currency (default: "SEK")
-  -h, --hosted                Hosted mode provides checkout link
-  -m, --mhcd                  Hides address fields in checkout (default: true)
-  --no-mhcd                   Displays address fields in checkout
-  --consumer                  Automatically adds consumer object (default: true)
-  --no-consumer               Automatically removes consumer object
-  --consumer-locale <locale>  Set consumer locale (default: "sv")
-  --consumer-type <type>      Set consumer type (default: "B2C")
-  --charge                    Charge payment automatically if reserved (default: true)
-  --lang <string>             Set checkout language (default: "sv-SE")
-  --prod-secret-key <string>  Your production secret API key
-  --test-secret-key <string>  Your test secret API key
-  -p, --production            Use production environment
-  -v, --verbose               Output additional information
-  --help                      display help for command
+  -c, --currency <code>         Set checkout currency (default: "SEK")
+  -H, --hosted                  Hosted mode provides checkout link
+  -m, --mhcd                    Hides address fields in checkout (default: true)
+  --no-mhcd                     Displays address fields in checkout
+  --consumer                    Automatically adds consumer object (default: true)
+  --no-consumer                 Automatically removes consumer object
+  --consumer-locale <locale>    Set consumer locale (default: "sv")
+  --consumer-type <type>        Set consumer type (default: "B2C")
+  --charge                      Charge payment automatically if reserved (default:
+                                true)
+  --lang <string>               Set checkout language (default: "sv-SE")
+  --prod-secret-key <string>    Your production secret API key
+  --prod-checkout-key <string>  Your production checkout key
+  --test-secret-key <string>    Your test secret API key
+  --test-checkout-key <string>  Your test checkout key
+  -p, --production              Use production environment
+  -v, --verbose                 Output additional information
+  -h, --help                    display help for command
 ```
 
 ### create-completed-checkout
@@ -152,7 +156,7 @@ Arguments:
 
 Options:
   -c, --currency <code>       Set checkout currency (default: "SEK")
-  -h, --hosted                Hosted mode provides checkout link
+  -H, --hosted                Hosted mode provides checkout link
   -m, --mhcd                  Hides address fields in checkout (default: true)
   --no-mhcd                   Displays address fields in checkout
   --consumer                  Automatically adds consumer object (default: true)
@@ -166,13 +170,34 @@ Options:
   --test-checkout-key <key>   Your test checkout API key
   -s, --save                  Save table to CSV-file (default: false)
   -t, --table                 Display results in a table
-  -v, --verbose               Output additional information
-  --help                      display help for command
+  -v, --verbose               Output additional information (default: true)
+  -h, --help                  display help for command
+```
+
+### terminate-payment
+
+```
+Usage: nexi-cli terminate-payment [options] [paymentId]
+
+Terminate payment information individually or in bulk
+
+Arguments:
+  paymentId                Payment ID
+
+Options:
+  -f, --file <path>        Path to file containing list of payment ID
+  --prod-secret-key <key>  Your production secret API key
+  --test-secret-key <key>  Your test secret API key
+  -p, --production         Use production environment (default: false)
+  -s, --save               Save table to CSV-file (default: false)
+  -t, --table              Display results in a table
+  -h, --help               display help for command
 ```
 
 ## Screenshots
 
-![Screenshot of embedded checkout](./docs/embedded-checkout.png?raw=true 'Embedded checkout')
+![Screenshot of embedded checkout](./docs/embedded-checkout-dark.jpg?raw=true 'Embedded checkout')
+![Screenshot of embedded checkout](./docs/embedded-checkout-light.jpg?raw=true 'Embedded checkout')
 
 ## Todo
 
@@ -185,6 +210,7 @@ Options:
     - [x] Create scheduled subscriptions
     - [x] Create unscheduled subscriptions
 - [x] Webhooks support
+- [x] Terminate payment
 - [ ] Cancel payments
 - [ ] Charge payments
     - [ ] Single one-off charges
