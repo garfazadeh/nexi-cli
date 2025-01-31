@@ -115,7 +115,6 @@ export default async function runCreateCheckout(options) {
                 returnUrl: 'https://shop.easy.nets.eu/success',
                 cancelUrl: 'https://shop.easy.nets.eu/cancel',
                 termsUrl: 'https://shop.easy.nets.eu/terms',
-                merchantHandlesConsumerData: true,
             },
         };
         const response = await createPayment(payload, options);

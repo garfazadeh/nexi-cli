@@ -26,6 +26,25 @@ const localeMapping = {
 
 const config = await configPromise;
 
+function getLocaleFromCountryCode(countryCode) {
+    switch (locale) {
+        case 'da':
+            return { countryCodeAlpha: 'DNK', countryCodeNumeric: '45' }; // Denmark
+        case 'de':
+            return { countryCodeAlpha: 'DEU', countryCodeNumeric: '49' }; // Germany
+        case 'de_AT':
+            return { countryCodeAlpha: 'AUT', countryCodeNumeric: '43' }; // Austria
+        case 'en':
+            return { countryCodeAlpha: 'USA', countryCodeNumeric: '1' }; // United States
+        case 'nb_NO':
+            return { countryCodeAlpha: 'NOR', countryCodeNumeric: '47' }; // Norway
+        case 'sv':
+            return { countryCodeAlpha: 'SWE', countryCodeNumeric: '46' }; // Sweden
+        default:
+            return { countryCodeAlpha: '', countryCodeNumeric: '' }; // Default case if locale is not recognized
+    }
+}
+
 function getSpecificsFromLocale(locale) {
     switch (locale) {
         case 'da':
