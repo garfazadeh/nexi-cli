@@ -45,7 +45,6 @@ export default async function runTerminatePayment(options, arg) {
         paymentIds.push(arg);
     }
     // process list of payment ID
-    console.log(paymentIds);
     validateInput(paymentIds);
 
     const responses = [];
@@ -65,9 +64,10 @@ export default async function runTerminatePayment(options, arg) {
     }
     if (options.table) {
         // format the response object to a flat structure
-        console.log('\n');
+        console.log('');
         console.table(responses);
     } else {
+        console.log('');
         const resultList = await responses.map(response => {
             console.log(
                 util.inspect(response, {

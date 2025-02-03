@@ -2,11 +2,6 @@
 import chalk from 'chalk';
 import { program } from 'commander';
 
-import runCreateCheckout from '../src/commands/createCheckout.js';
-import runCreateCompletedCheckout from '../src/commands/createCompletedCheckout.js';
-import runCreatePayload from '../src/commands/createPayload.js';
-import runFetchPayment from '../src/commands/fetchPayment.js';
-import runTerminatePayment from '../src/commands/terminatePayment.js';
 import configPromise from '../src/utils/config.js';
 
 // Read and use the config file
@@ -22,6 +17,81 @@ function validateTarget(value) {
     return value;
 }
 
+function applyConfigDefaults(options, config) {
+    // Iterate over the keys in config
+    for (const key in config) {
+        if (config.hasOwnProperty(key)) {
+            // If the option is not provided (undefined or null), use the value from config
+            if (options[key] === undefined || options[key] === null) {
+                options[key] = config[key];
+            }
+        }
+    }
+
+    return options;
+}
+
+function addSecretKeysOptions(cmd) {
+    return cmd
+        .option('--prod-secret-key <string>', 'Your production secret API key')
+        .option('--test-secret-key <string>', 'Your test secret API key')
+        .option('--no-production', 'Negate production')
+        .option(
+            '-p, --production',
+            'Use production environment',
+            config.production || false
+        );
+}
+
+function addCreatePaymentOptions(cmd) {
+    return cmd
+        .option(
+            '-C, --charge',
+            'Charge payment automatically if reserved',
+            config.charge || false
+        )
+        .option('--no-charge', 'Disables automatic charge')
+        .option(
+            '-c, --currency <code>',
+            'Set checkout currency',
+            config.currency || 'EUR'
+        )
+        .option(
+            '--consumer',
+            'Automatically adds consumer object',
+            config.consumer || false
+        )
+        .option('--no-consumer', 'Automatically removes consumer object')
+        .option(
+            '--consumer-locale <locale>',
+            "Available locales: 'da', 'de', 'de_AT', 'en', 'nb_NO', 'sv'",
+            config.consumerLocale || 'en_GB'
+        )
+        .option(
+            '--consumer-type <type>',
+            'Set type of consumer generated',
+            config.consumerType || 'B2C'
+        )
+        .option('-H, --hosted', 'Hosted mode provides checkout link')
+        .option(
+            '-m, --mhcd',
+            'Hides address fields in checkout',
+            config.mhcd || false
+        )
+        .option('--no-mhcd', 'Displays address fields in checkout')
+        .option('--port', 'Server port', config.port)
+        .option('-S, --scheduled', 'Create scheduled subscription')
+        .option('-u, --unscheduled', 'Create unscheduled subscription');
+}
+
+function addPrintListOptions(cmd) {
+    return cmd
+        .option('-e, --export', 'Export table to CSV-file', config.export)
+        .option('--no-export', 'Disables csv-export')
+        .option('-t, --table', 'Display results in a table')
+        .option('--no-table', 'Prints raw data to console');
+}
+
 program
     .name('nexi-cli')
     .description(
@@ -30,222 +100,107 @@ program
     )
     .version('0.9.2');
 
-program
-    .command('fetch-payment')
+const fetch = program.command('fetch').description('fetch information');
+const create = program.command('create').description('create payments');
+/* const charge = program
+    .command('charge')
+    .description('Charge reservations or subscriptions');
+const refund = program
+    .command('refund')
+    .description('Refund charges or payments');
+const update = program.command('update').description('Update payments');
+const cancel = program
+    .command('cancel')
+    .description('Cancel reservations or refunds');*/
+const terminate = program
+    .command('terminate')
+    .description('terminate payments');
+//const verify = program.command('verify').description('Verify subscriptions');
+const init = program.command('init').description('initiate a checkout');
+const mock = program.command('mock').description('create mock payments');
+
+addPrintListOptions(addSecretKeysOptions(fetch.command('payment')))
     .argument('[paymentId]', 'Payment ID')
     .description('Fetch payment information individually or in bulk')
     .option('-f, --file <path>', 'Path to file containing list of payment ID')
-    .option('-p, --production', 'Use production environment', config.production)
-    .option('--prod-secret-key <key>', 'Your production secret API key')
-    .option('-e, --export', 'Export table to CSV-file', config.export)
-    .option('-t, --table', 'Display results in a table')
-    .option('--test-secret-key <key>', 'Your test secret API key')
-    .action((arg, options) => {
+    .action(async (arg, options) => {
         if (!arg && !options.file) {
             console.error(
                 'Error: Either the argument or the file option must be set.'
             );
             process.exit(1);
         }
-        options.prodSecretKey = options.prodSecretKey
-            ? options.prodSecretKey
-            : config.prodSecretKey;
-        options.testSecretKey = options.testSecretKey
-            ? options.testSecretKey
-            : config.testSecretKey;
-        options.production = options.production
-            ? options.production
-            : config.production;
-        options.export = options.export ? options.export : config.export;
-        runFetchPayment(options, arg);
+        const mergedOptions = applyConfigDefaults(options, config);
+        const { default: runFetchPayment } = await import(
+            '../src/commands/fetchPayment.js'
+        );
+        runFetchPayment(mergedOptions, arg);
     });
 
-program
-    .command('create-payload')
+addCreatePaymentOptions(create.command('payment'))
     .description('Returns a payload for a create payment request')
-    .option(
-        '-C, --charge',
-        'Charge payment automatically if reserved',
-        config.charge || false
-    )
-    .option(
-        '-c, --currency <code>',
-        'Set checkout currency',
-        config.currency || 'EUR'
-    )
-    .option(
-        '--consumer',
-        'Automatically adds consumer object',
-        config.consumer || false
-    )
-    .option(
-        '--consumer-locale <locale>',
-        "Available locales: 'da', 'de', 'de_AT', 'en', 'nb_NO', 'sv'",
-        config.consumerLocale || 'en_GB'
-    )
-    .option(
-        '--consumer-type <type>',
-        'Set type of consumer generated',
-        config.consumerType || 'B2C'
-    )
-    .option('-H, --hosted', 'Hosted mode provides checkout link')
-    .option(
-        '-m, --mhcd',
-        'Hides address fields in checkout',
-        config.mhcd || false
-    )
-    .option('--no-charge', 'Disables automatic charge')
-    .option('--no-consumer', 'Automatically removes consumer object')
-    .option('--no-mhcd', 'Displays address fields in checkout')
-    .action(options => {
+    .action(async options => {
+        const mergedOptions = applyConfigDefaults(options, config);
         try {
-            validateTarget(options.consumerLocale);
+            validateTarget(mergedOptions.consumerLocale);
         } catch (error) {
             console.error('Not a valid consumer locale');
             process.exit(1);
         }
-        runCreatePayload(options);
+        const { default: runCreatePayload } = await import(
+            '../src/commands/createPayload.js'
+        );
+        runCreatePayload(mergedOptions);
     });
 
-program
-    .command('create-checkout')
+addSecretKeysOptions(addCreatePaymentOptions(init.command('checkout')))
     .description('Create a embedded checkout or URL')
-    .option(
-        '-C, --charge',
-        'Charge payment automatically if reserved',
-        config.charge || false
-    )
-    .option(
-        '-c, --currency <code>',
-        'Set checkout currency',
-        config.currency || 'EUR'
-    )
-    .option(
-        '--consumer',
-        'Automatically adds consumer object',
-        config.consumer || false
-    )
-    .option(
-        '--consumer-locale <locale>',
-        'Set consumer locale',
-        config.consumerLocale || 'sv'
-    )
-    .option(
-        '--consumer-type <type>',
-        'Set consumer type',
-        config.consumerType || 'B2C'
-    )
     .option('-f, --finalized-event', 'Sends payment-order-finalized as false')
-    .option('-H, --hosted', 'Hosted mode provides checkout link')
     .option(
         '--lang <string>',
         'Set checkout language',
         config.checkoutLanguage || 'en-GB'
     )
-    .option(
-        '-m, --mhcd',
-        'Hides address fields in checkout',
-        config.mhcd || false
-    )
-    .option('--no-charge', 'Negate charge')
-    .option('--no-consumer', 'Negate consumer')
-    .option('--no-mhcd', 'Negate mhcd')
-    .option('--no-production', 'Negate production')
     .option('--no-verbose', 'Negate verbose')
-    .option(
-        '-p, --production',
-        'Use production environment',
-        config.production || false
-    )
-    .option('--prod-checkout-key <string>', 'Your production checkout key')
-    .option('--prod-secret-key <string>', 'Your production secret API key')
     .option('--test-checkout-key <string>', 'Your test checkout key')
-    .option('--test-secret-key <string>', 'Your test secret API key')
+    .option('--prod-checkout-key <string>', 'Your production checkout key')
     .option('-v, --verbose', 'Output additional information', config.verbose)
-    .action(options => {
-        options.prodSecretKey = options.prodSecretKey
-            ? options.prodSecretKey
-            : config.prodSecretKey;
-        options.prodCheckoutKey = options.prodCheckoutKey
-            ? options.prodCheckoutKey
-            : config.prodCheckoutKey;
-        options.testSecretKey = options.testSecretKey
-            ? options.testSecretKey
-            : config.testSecretKey;
-        options.testCheckoutKey = options.testCheckoutKey
-            ? options.testCheckoutKey
-            : config.testCheckoutKey;
-        options.themeDark = config.themeDark;
-        options.themeLight = config.themeLight;
-        runCreateCheckout(options);
+    .action(async options => {
+        const mergedOptions = applyConfigDefaults(options, config);
+        const { default: runCreateCheckout } = await import(
+            '../src/commands/createCheckout.js'
+        );
+        runCreateCheckout(mergedOptions);
     });
 
-program
-    .command('create-completed-checkout')
-    .argument('[number]', 'Number of checkouts')
-    .description('Create completed checkout in test environment')
-    .option(
-        '-C, --charge',
-        'Charge payment automatically if reserved',
-        config.charge || false
-    )
-    .option(
-        '-c, --currency <code>',
-        'Set checkout currency',
-        config.currency || 'EUR'
-    )
-    .option(
-        '--consumer',
-        'Automatically adds consumer object',
-        config.consumer || false
-    )
-    .option(
-        '--consumer-locale <locale>',
-        'Set consumer locale',
-        config.consumerLocale || 'en'
-    )
-    .option(
-        '--consumer-type <type>',
-        'Set consumer type',
-        config.consumerType || 'B2C'
+addSecretKeysOptions(addCreatePaymentOptions(mock.command('payment')))
+    .argument('[number]', 'Number of completed payments')
+    .description(
+        'Create mock payments for testing purposes in test environment'
     )
     .option('-e, --export', 'Export table to CSV-file', config.export)
-    .option('-H, --hosted', 'Hosted mode provides checkout link')
-    .option(
-        '-m, --mhcd',
-        'Hides address fields in checkout',
-        config.mhcd || false
-    )
-    .option('--no-charge', 'Negate charge')
-    .option('--no-consumer', 'Negate consumer')
     .option('--no-export', 'Negate export')
-    .option('--no-mhcd', 'Negate mhcd')
     .option('--no-verbose', 'Negate verbose')
-    .option('-S, --scheduled', 'Create scheduled subscription')
+
     .option('-t, --table', 'Display results in a table')
-    .option('--test-checkout-key <key>', 'Your test checkout API key')
-    .option('--test-secret-key <key>', 'Your test secret API key')
-    .option('-u, --unscheduled', 'Create unscheduled subscription')
     .option('-v, --verbose', 'Output additional information', config.verbose)
-    .action((arg, options) => {
-        options.testSecretKey = options.testSecretKey
-            ? options.testSecretKey
-            : config.testSecretKey;
-        options.testCheckoutKey = options.testCheckoutKey
-            ? options.testCheckoutKey
-            : config.testCheckoutKey;
-        if (options.unscheduled && options.scheduled) {
+    .action(async (arg, options) => {
+        const mergedOptions = applyConfigDefaults(options, config);
+        if (mergedOptions.unscheduled && mergedOptions.scheduled) {
             console.error(
                 'Error: Can not create both scheduled and unscheduled subscription for same payment ID.'
             );
             process.exit(1);
         } else {
-            runCreateCompletedCheckout(options, arg);
+            const { default: runCreateCompletedCheckout } = await import(
+                '../src/commands/createCompletedCheckout.js'
+            );
+            runCreateCompletedCheckout(mergedOptions, arg);
         }
     });
 
-program
-    .command('terminate-payment')
+terminate
+    .command('payment')
     .argument('[paymentId]', 'Payment ID')
     .description('Terminate payment information individually or in bulk')
     .option('-e, --export', 'Export table to CSV-file', config.export)
@@ -260,21 +215,18 @@ program
     .option('--prod-secret-key <key>', 'Your production secret API key')
     .option('-t, --table', 'Display results in a table')
     .option('--test-secret-key <key>', 'Your test secret API key')
-    .action((arg, options) => {
+    .action(async (arg, options) => {
         if (!arg && !options.file) {
             console.error(
                 'Error: Either the argument or the file option must be set.'
             );
             process.exit(1);
         }
-        options.prodSecretKey = options.prodSecretKey
-            ? options.prodSecretKey
-            : config.prodSecretKey;
-        options.testSecretKey = options.testSecretKey
-            ? options.testSecretKey
-            : config.testSecretKey;
-        options.export = options.export ? options.export : config.export;
-        runTerminatePayment(options, arg);
+        const mergedOptions = applyConfigDefaults(options, config);
+        const { runTerminatePayment } = await import(
+            '../src/commands/terminatePayment.js'
+        );
+        runTerminatePayment(mergedOptions, arg);
     });
 
 program.parse(process.argv);

@@ -21,7 +21,7 @@ export default async function runCreateCheckout(options) {
     // create tunnel to receive webhooks
     const tunnel = await localtunnel({ port: config.port });
 
-    let payload = generatePayload(options);
+    let payload = await generatePayload(options);
     payload.notifications = {
         webHooks: [
             {
@@ -91,33 +91,20 @@ export default async function runCreateCheckout(options) {
             },
         ],
     };
-    if (!options.hosted) {
-        if (options.verbose) {
-            log(chalk.blue('Sent create payment request:'));
-            log(
-                util.inspect(payload, {
-                    depth: null,
-                    colors: true,
-                    maxArrayLength: null,
-                })
-            );
-        } else {
-            log(chalk.blue('Sent create payment request'));
-        }
+    if (options.verbose) {
+        log(chalk.blue('Sent create payment request:'));
+        log(
+            util.inspect(payload, {
+                depth: null,
+                colors: true,
+                maxArrayLength: null,
+            })
+        );
+    } else {
+        log(chalk.blue('Sent create payment request'));
     }
-
+    const response = await createPayment(payload, options);
     if (options.hosted) {
-        payload.checkout = {
-            ...payload.checkout,
-            ...{
-                integrationType: 'HostedPaymentPage',
-                url: null,
-                returnUrl: 'https://shop.easy.nets.eu/success',
-                cancelUrl: 'https://shop.easy.nets.eu/cancel',
-                termsUrl: 'https://shop.easy.nets.eu/terms',
-            },
-        };
-        const response = await createPayment(payload, options);
         log(chalk.blue.bold('Payment ID: '));
         log(chalk.green(response.paymentId));
         log(chalk.blue.bold('URL:'));
@@ -127,7 +114,6 @@ export default async function runCreateCheckout(options) {
             )
         );
     } else {
-        const response = await createPayment(payload, options);
         log(chalk.blue.bold('\nReceived Payment ID: ') + response.paymentId);
         const serverProcess = fork(serverPath);
         serverProcess.on('message', async message => {

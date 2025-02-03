@@ -142,8 +142,12 @@ export async function terminatePayment(paymentId, options) {
         );
         return response;
     } catch (error) {
-        errorHandling(error);
-        process.exit(1);
+        if (error.response.status === 400) {
+            return error.response;
+        } else {
+            errorHandling(error);
+            process.exit(1);
+        }
     }
 }
 

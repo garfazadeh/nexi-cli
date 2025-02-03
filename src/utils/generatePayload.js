@@ -1,87 +1,77 @@
-import {
-    Faker,
-    base,
-    da,
-    de,
-    de_AT,
-    de_CH,
-    en,
-    en_GB,
-    faker,
-    fi,
-    nb_NO,
-    sv,
-} from '@faker-js/faker';
+async function loadFakerLocale(consumerLocale) {
+    let faker;
+    try {
+        // Dynamically import the appropriate locale based on customerLocale
+        switch (consumerLocale) {
+            case 'da':
+                faker = await import('@faker-js/faker/locale/da');
+                break;
+            case 'de':
+                faker = await import('@faker-js/faker/locale/de');
+                break;
+            case 'de_AT':
+                faker = await import('@faker-js/faker/locale/de_AT');
+                break;
+            case 'en':
+                faker = await import('@faker-js/faker/locale/en');
+                break;
+            case 'nb_NO':
+                faker = await import('@faker-js/faker/locale/nb_NO');
+                break;
+            case 'sv':
+                faker = await import('@faker-js/faker/locale/sv');
+                break;
+            default:
+                throw new Error(`Unsupported locale: ${consumerLocale}`);
+        }
+    } catch (error) {
+        console.error('Failed to load faker locale:', error);
+        throw error;
+    }
 
-import configPromise from './config.js';
+    // Access the faker object based on the module structure
+    if (faker && faker.default) {
+        faker = faker.default; // Default export
+    } else if (faker && faker.faker) {
+        faker = faker.faker; // Named export
+    } else {
+        throw new Error(
+            'Unable to resolve faker object from the imported module.'
+        );
+    }
+    return faker;
+}
 
-const localeMapping = {
-    da,
-    de,
-    de_AT,
-    en,
-    nb_NO,
-    sv,
+const localeSpecifics = {
+    da: { countryCodeAlpha: 'DNK', countryCodeNumeric: '45' },
+    de: { countryCodeAlpha: 'DEU', countryCodeNumeric: '49' },
+    de_AT: { countryCodeAlpha: 'AUT', countryCodeNumeric: '43' },
+    en: { countryCodeAlpha: 'USA', countryCodeNumeric: '1' },
+    nb_NO: { countryCodeAlpha: 'NOR', countryCodeNumeric: '47' },
+    sv: { countryCodeAlpha: 'SWE', countryCodeNumeric: '46' },
 };
 
-const config = await configPromise;
-
-function getLocaleFromCountryCode(countryCode) {
-    switch (locale) {
-        case 'da':
-            return { countryCodeAlpha: 'DNK', countryCodeNumeric: '45' }; // Denmark
-        case 'de':
-            return { countryCodeAlpha: 'DEU', countryCodeNumeric: '49' }; // Germany
-        case 'de_AT':
-            return { countryCodeAlpha: 'AUT', countryCodeNumeric: '43' }; // Austria
-        case 'en':
-            return { countryCodeAlpha: 'USA', countryCodeNumeric: '1' }; // United States
-        case 'nb_NO':
-            return { countryCodeAlpha: 'NOR', countryCodeNumeric: '47' }; // Norway
-        case 'sv':
-            return { countryCodeAlpha: 'SWE', countryCodeNumeric: '46' }; // Sweden
-        default:
-            return { countryCodeAlpha: '', countryCodeNumeric: '' }; // Default case if locale is not recognized
-    }
-}
-
 function getSpecificsFromLocale(locale) {
-    switch (locale) {
-        case 'da':
-            return { countryCodeAlpha: 'DNK', countryCodeNumeric: '45' }; // Denmark
-        case 'de':
-            return { countryCodeAlpha: 'DEU', countryCodeNumeric: '49' }; // Germany
-        case 'de_AT':
-            return { countryCodeAlpha: 'AUT', countryCodeNumeric: '43' }; // Austria
-        case 'en':
-            return { countryCodeAlpha: 'USA', countryCodeNumeric: '1' }; // United States
-        case 'nb_NO':
-            return { countryCodeAlpha: 'NOR', countryCodeNumeric: '47' }; // Norway
-        case 'sv':
-            return { countryCodeAlpha: 'SWE', countryCodeNumeric: '46' }; // Sweden
-        default:
-            return { countryCodeAlpha: '', countryCodeNumeric: '' }; // Default case if locale is not recognized
-    }
+    return (
+        localeSpecifics[locale] || {
+            countryCodeAlpha: '',
+            countryCodeNumeric: '',
+        }
+    );
 }
 
-function createRandomConsumer(options) {
-    const customFaker = new Faker({
-        locale: [localeMapping[options.consumerLocale]],
-    });
-    const firstName = customFaker.person.firstName();
-    const lastName = customFaker.person.lastName();
-    const specifics = getSpecificsFromLocale(options.consumerLocale);
-    let prefix = '';
-    let phoneNumber = customFaker.phone.number({ style: 'international' });
-    if (options.consumerLocale === 'en') {
-        prefix = phoneNumber.substring(0, 2);
-        phoneNumber = phoneNumber.substring(2);
-    } else {
-        prefix = phoneNumber.substring(0, 3);
-        phoneNumber = phoneNumber.substring(3);
-    }
+async function createRandomConsumer(options, faker) {
+    // Now you can use the faker object
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
 
+    const specifics = getSpecificsFromLocale(options.consumerLocale);
     const includeAddressLine2 = Math.random() < 0.5;
+    const phoneNumber = faker.phone.number({ style: 'international' });
+    const [prefix, number] =
+        options.consumerLocale === 'en'
+            ? [phoneNumber.substring(0, 2), phoneNumber.substring(2)]
+            : [phoneNumber.substring(0, 3), phoneNumber.substring(3)];
 
     const consumer = {
         reference: faker.string.alpha(10),
@@ -91,71 +81,60 @@ function createRandomConsumer(options) {
         }),
         shippingAddress: {
             addressLine1:
-                customFaker.location.street() +
-                ' ' +
-                customFaker.location.buildingNumber(),
+                faker.location.street() + ' ' + faker.location.buildingNumber(),
             addressLine2: includeAddressLine2
-                ? customFaker.location.secondaryAddress()
+                ? faker.location.secondaryAddress()
                 : '',
-            postalCode: customFaker.location.zipCode(),
-            city: customFaker.location.city(),
+            postalCode: faker.location.zipCode(),
+            city: faker.location.city(),
             country: specifics.countryCodeAlpha,
         },
-        phoneNumber: {
-            prefix: prefix,
-            number: phoneNumber,
-        },
+        phoneNumber: { prefix, number },
     };
     if (options.consumerType === 'B2C') {
-        consumer.privatePerson = {
-            firstName: firstName,
-            lastName: lastName,
-        };
-    }
-    if (options.consumerType === 'B2B') {
+        consumer.privatePerson = { firstName, lastName };
+    } else if (options.consumerType === 'B2B') {
         consumer.company = {
             name: faker.company.name(),
-            contact: {
-                firstName: firstName,
-                lastName: lastName,
-            },
+            contact: { firstName, lastName },
         };
     }
     return consumer;
 }
 
-function generateOrderItems(number) {
-    const items = [];
-    for (let i = 0; i < number; i++) {
+function generateOrderItems(number, faker) {
+    return Array.from({ length: number }, () => {
         const productName = faker.commerce.productName();
         const amount = faker.commerce.price({ min: 300, max: 100000, dec: 0 });
         const quantity = Math.ceil(Math.random() * 6);
-        items.push({
+
+        return {
             reference: productName
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-+|-+$/g, ''),
             name: productName,
-            quantity: quantity,
+            quantity,
             unit: 'pcs',
             unitPrice: amount,
             taxRate: 0,
             taxAmount: 0,
             netTotalAmount: quantity * amount,
             grossTotalAmount: quantity * amount,
-        });
-    }
-    return items;
+        };
+    });
 }
 
-export default function generatePayload(options) {
-    // generate random amount of order items
-    const charge = options.charge;
-    const items = generateOrderItems(Math.ceil(Math.random() * 3));
-    // calculate total order value from items
-    const totalValue = items
-        .map(item => item.netTotalAmount)
-        .reduce((sum, value) => sum + value, 0);
+export default async function generatePayload(options) {
+    const faker = await loadFakerLocale(options.consumerLocale);
+    const consumer = options.consumer
+        ? await createRandomConsumer(options, faker)
+        : null;
+    const items = await generateOrderItems(Math.ceil(Math.random() * 3), faker);
+    const totalValue = items.reduce(
+        (sum, item) => sum + item.netTotalAmount,
+        0
+    );
 
     const payload = {
         order: {
@@ -167,17 +146,25 @@ export default function generatePayload(options) {
                 .toUpperCase(),
         },
         checkout: {
-            termsUrl: `http://localhost:${config.port}/terms`,
+            termsUrl: `http://localhost:${options.port}/terms`,
             integrationType: options.hosted
                 ? 'HostedPaymentPage'
                 : 'EmbeddedCheckout',
             merchantHandlesConsumerData: options.mhcd,
-            url: `http://localhost:${config.port}`,
-            charge,
+            charge: options.charge,
+            ...(options.hosted
+                ? {
+                      returnUrl: `http://localhost:${options.port}/return`,
+                      cancelUrl: `http://localhost:${options.port}/cancel`,
+                  }
+                : {
+                      url: `http://localhost:${options.port}`,
+                  }),
         },
     };
-    if (options.consumer) {
-        payload.checkout.consumer = createRandomConsumer(options);
+
+    if (consumer) {
+        payload.checkout.consumer = consumer;
     }
 
     if (options.consumerType === 'B2B') {
@@ -193,10 +180,10 @@ export default function generatePayload(options) {
             interval: 0,
         };
     }
+
     if (options.unscheduled) {
-        payload.unscheduledSubscription = {
-            create: true,
-        };
+        payload.unscheduledSubscription = { create: true };
     }
+
     return payload;
 }
