@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import express from 'express';
-import util from 'node:util';
+import { colorize } from 'json-colorizer';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -37,22 +37,11 @@ app.get('/data', (req, res) => {
 // POST endpoint to save data
 app.post('/event', (req, res) => {
     if (req.body.event === 'iframe-loaded' && config.verbose) {
-        console.log(
-            chalk.dim(`\nClient raised event ${chalk.bold(req.body.event)}`)
-        );
-    }
-    if (req.body.event === 'payment-order-finalized') {
-        console.log(
-            chalk.yellow(
-                `\nClient sent ${chalk.bold(req.body.event)} event with value ${chalk.bold(req.body.value)}`
-            )
-        );
-    } else {
-        console.log(
-            chalk.yellow(
-                `\nCheckout JS raised event ${chalk.bold(req.body.event)}`
-            )
-        );
+        console.log(`\nClient raised event ${chalk.bold(req.body.event)}`);
+    } else if (req.body.event === 'payment-order-finalized') {
+        console.log(`\nClient raised ${chalk.bold(req.body.event)} event with value ${chalk.bold(req.body.value)}`);
+    } else if (req.body.event !== 'iframe-loaded' && config.verbose) {
+        console.log(chalk.blue(`\nCheckout JS raised event ${chalk.bold(req.body.event)}`));
     }
 
     res.send('Data received');
@@ -61,32 +50,16 @@ app.post('/event', (req, res) => {
 // GET endpoint to retrieve data
 app.post('/webhook', (req, res) => {
     if (data.verbose) {
-        console.log(
-            chalk.blue(
-                `\nWebhook ` + chalk.bold(req.body.event) + ' event received:'
-            )
-        );
-        console.log(
-            util.inspect(req.body, {
-                depth: null,
-                colors: true,
-                maxArrayLength: null,
-            })
-        );
+        console.log(chalk.green(`\nWebhook ` + chalk.bold(req.body.event) + ' event received:'));
+        console.log(colorize(JSON.stringify(req.body, null, 2)));
     } else {
-        console.log(
-            chalk.blue(
-                `\nWebhook ` + chalk.bold(req.body.event) + ' event received'
-            )
-        );
+        console.log(chalk.green(`\nWebhook ` + chalk.bold(req.body.event) + ' event received'));
     }
     res.status(200).send('Webhook received');
 });
 
 app.listen(port, () => {
-    console.log(
-        chalk.green.bold(`\nCheckout accessible on http://localhost:${port}`)
-    );
+    console.log(`\nCheckout accessible on ` + chalk.bold.underline(`http://localhost:${port}`));
     if (process.send) {
         process.send('server-started');
     }

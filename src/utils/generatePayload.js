@@ -35,9 +35,7 @@ async function loadFakerLocale(consumerLocale) {
     } else if (faker && faker.faker) {
         faker = faker.faker; // Named export
     } else {
-        throw new Error(
-            'Unable to resolve faker object from the imported module.'
-        );
+        throw new Error('Unable to resolve faker object from the imported module.');
     }
     return faker;
 }
@@ -61,7 +59,6 @@ function getSpecificsFromLocale(locale) {
 }
 
 async function createRandomConsumer(options, faker) {
-    // Now you can use the faker object
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
 
@@ -80,11 +77,8 @@ async function createRandomConsumer(options, faker) {
             lastName: lastName.toLowerCase(),
         }),
         shippingAddress: {
-            addressLine1:
-                faker.location.street() + ' ' + faker.location.buildingNumber(),
-            addressLine2: includeAddressLine2
-                ? faker.location.secondaryAddress()
-                : '',
+            addressLine1: faker.location.street() + ' ' + faker.location.buildingNumber(),
+            addressLine2: includeAddressLine2 ? faker.location.secondaryAddress() : '',
             postalCode: faker.location.zipCode(),
             city: faker.location.city(),
             country: specifics.countryCodeAlpha,
@@ -102,10 +96,14 @@ async function createRandomConsumer(options, faker) {
     return consumer;
 }
 
-function generateOrderItems(number, faker) {
-    return Array.from({ length: number }, () => {
+function generateOrderItems(number, faker, totalNetAmount = null) {
+    if (number <= 0) {
+        return []; // Return an empty array if no items are requested
+    }
+
+    const items = Array.from({ length: number }, () => {
         const productName = faker.commerce.productName();
-        const amount = faker.commerce.price({ min: 300, max: 100000, dec: 0 });
+        const amount = Math.floor(faker.commerce.price({ min: 300, max: 100000, dec: 0 }));
         const quantity = Math.ceil(Math.random() * 6);
 
         return {
@@ -123,33 +121,60 @@ function generateOrderItems(number, faker) {
             grossTotalAmount: quantity * amount,
         };
     });
+
+    if (totalNetAmount !== null) {
+        const currentTotal = items.reduce((sum, item) => sum + item.netTotalAmount, 0);
+        const adjustmentFactor = totalNetAmount / currentTotal;
+
+        items.forEach(item => {
+            item.unitPrice = Math.floor(item.unitPrice * adjustmentFactor);
+            item.netTotalAmount = item.quantity * item.unitPrice;
+            item.grossTotalAmount = item.netTotalAmount;
+        });
+
+        const adjustedTotal = items.reduce((sum, item) => sum + item.netTotalAmount, 0);
+
+        const roundingDifference = totalNetAmount - adjustedTotal;
+
+        if (roundingDifference !== 0) {
+            items.push({
+                reference: 'rounding-adjustment',
+                name: 'Rounding Adjustment',
+                quantity: 1,
+                unit: 'pcs',
+                unitPrice: roundingDifference,
+                taxRate: 0,
+                taxAmount: 0,
+                netTotalAmount: roundingDifference,
+                grossTotalAmount: roundingDifference,
+            });
+        }
+    }
+
+    return items;
 }
 
 export default async function generatePayload(options) {
     const faker = await loadFakerLocale(options.consumerLocale);
-    const consumer = options.consumer
-        ? await createRandomConsumer(options, faker)
-        : null;
-    const items = await generateOrderItems(Math.ceil(Math.random() * 3), faker);
-    const totalValue = items.reduce(
-        (sum, item) => sum + item.netTotalAmount,
-        0
-    );
+    const consumer = options.consumer && (await createRandomConsumer(options, faker));
+    const items = generateOrderItems(Math.ceil(Math.random() * 3), faker, options.orderValue);
+    let totalAmount;
+    if (!options.orderValue) {
+        totalAmount = items.reduce((sum, item) => sum + item.netTotalAmount, 0);
+    } else {
+        totalAmount = options.orderValue;
+    }
 
     const payload = {
         order: {
             items,
-            amount: totalValue,
+            amount: totalAmount,
             currency: options.currency,
-            reference: faker.string
-                .hexadecimal({ length: 8, prefix: '#' })
-                .toUpperCase(),
+            reference: faker.string.hexadecimal({ length: 8, prefix: '#' }).toUpperCase(),
         },
         checkout: {
             termsUrl: `http://localhost:${options.port}/terms`,
-            integrationType: options.hosted
-                ? 'HostedPaymentPage'
-                : 'EmbeddedCheckout',
+            integrationType: options.hosted ? 'HostedPaymentPage' : 'EmbeddedCheckout',
             merchantHandlesConsumerData: options.mhcd,
             charge: options.charge,
             ...(options.hosted
@@ -163,27 +188,44 @@ export default async function generatePayload(options) {
         },
     };
 
-    if (consumer) {
-        payload.checkout.consumer = consumer;
-    }
+    options.publicDevice && (payload.checkout.publicDevice = true);
+    options.supportedConsumerType &&
+        ((payload.checkout.consumerType = payload.checkout.consumerType || {}),
+        (payload.checkout.consumerType.supportedTypes = options.supportedConsumerType));
+    options.defaultConsumerType &&
+        ((payload.checkout.consumerType = payload.checkout.consumerType || {}),
+        (payload.checkout.consumerType.default = options.defaultConsumerType));
 
-    if (options.consumerType === 'B2B') {
-        payload.checkout.consumerType = {
-            default: 'B2B',
-            supportedTypes: ['B2B'],
-        };
-    }
+    options.shippingCountries &&
+        (payload.checkout.shippingCountries = options.shippingCountries.map(code => ({
+            countryCode: code,
+        })));
 
-    if (options.scheduled) {
-        payload.subscription = {
+    options.countryCode && (payload.checkout.countryCode = options.countryCode);
+    consumer && (payload.checkout.consumer = consumer);
+
+    options.scheduled &&
+        (payload.subscription = {
             endDate: '2099-12-31T23:59:59.999Z',
             interval: 0,
-        };
+        });
+
+    options.unscheduled && (payload.unscheduledSubscription = { create: true });
+
+    return payload;
+}
+
+export async function generateChargePayload(options) {
+    const faker = await loadFakerLocale(options.consumerLocale);
+    const items = generateOrderItems(Math.ceil(Math.random() * 3), faker, options.orderValue);
+    if (!options.orderValue) {
+        options.orderValue = items.reduce((sum, item) => sum + item.netTotalAmount, 0);
     }
 
-    if (options.unscheduled) {
-        payload.unscheduledSubscription = { create: true };
-    }
+    const payload = {
+        amount: options.orderValue,
+        items,
+    };
 
     return payload;
 }

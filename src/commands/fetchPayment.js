@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import { readFileSync } from 'fs';
-import util from 'node:util';
+import { colorize } from 'json-colorizer';
 
 import { retrievePayment } from '../nexi-api/payment.js';
 import configPromise from '../utils/config.js';
@@ -65,8 +65,7 @@ export default async function runFetchPayment(options, arg) {
         tableContent = await responses.map(response => {
             const { payment } = response;
             const { orderDetails, paymentDetails, summary } = payment;
-            const formatAmount = amount =>
-                amount && amount !== 0 ? (amount / 100).toFixed(2) : 0;
+            const formatAmount = amount => (amount && amount !== 0 ? (amount / 100).toFixed(2) : 0);
             return {
                 paymentId: payment.paymentId,
                 currency: orderDetails.currency,
@@ -81,14 +80,9 @@ export default async function runFetchPayment(options, arg) {
         console.log('\n');
         console.table(tableContent);
     } else {
+        console.log('');
         const resultList = await responses.map(response => {
-            console.log(
-                util.inspect(response, {
-                    depth: null,
-                    colors: true,
-                    maxArrayLength: null,
-                })
-            );
+            console.log(colorize(JSON.stringify(response, null, 2)));
         });
     }
 

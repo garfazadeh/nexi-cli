@@ -1,8 +1,8 @@
 import axios from 'axios';
 import chalk from 'chalk';
 import { fork } from 'child_process';
+import { colorize } from 'json-colorizer';
 import localtunnel from 'localtunnel';
-import util from 'node:util';
 import { resolve } from 'path';
 
 import { createPayment, retrievePayment } from '../nexi-api/payment.js';
@@ -12,12 +12,9 @@ import generatePayload from '../utils/generatePayload.js';
 const config = await configPromise;
 const log = console.log;
 
-const serverPath = resolve(
-    new URL(import.meta.url).pathname,
-    '../../../bin/server.js'
-);
+const serverPath = resolve(new URL(import.meta.url).pathname, '../../../bin/server.js');
 
-export default async function runCreateCheckout(options) {
+export default async function runInitCheckout(options) {
     // create tunnel to receive webhooks
     const tunnel = await localtunnel({ port: config.port });
 
@@ -92,29 +89,20 @@ export default async function runCreateCheckout(options) {
         ],
     };
     if (options.verbose) {
-        log(chalk.blue('Sent create payment request:'));
-        log(
-            util.inspect(payload, {
-                depth: null,
-                colors: true,
-                maxArrayLength: null,
-            })
-        );
+        log(chalk.bold(`POST v1/payments`));
+        log(colorize(JSON.stringify(payload, null, 2)));
     } else {
-        log(chalk.blue('Sent create payment request'));
+        log(chalk.bold(`POST v1/payments`));
     }
     const response = await createPayment(payload, options);
     if (options.hosted) {
-        log(chalk.blue.bold('Payment ID: '));
-        log(chalk.green(response.paymentId));
-        log(chalk.blue.bold('URL:'));
-        log(
-            chalk.green(
-                response.hostedPaymentPageUrl + '&language=' + options.lang
-            )
-        );
+        log(chalk.green.bold('Payment ID: '));
+        log(response.paymentId);
+        log(chalk.green.bold('URL:'));
+        log(response.hostedPaymentPageUrl + '&language=' + options.lang);
     } else {
-        log(chalk.blue.bold('\nReceived Payment ID: ') + response.paymentId);
+        log(chalk.bold('\nResponse body:'));
+        log(colorize(JSON.stringify(response, null, 2)));
         const serverProcess = fork(serverPath);
         serverProcess.on('message', async message => {
             if (message === 'server-started') {
@@ -122,9 +110,7 @@ export default async function runCreateCheckout(options) {
                 const url = `http://localhost:${config.port}/data`;
 
                 const postData = {
-                    checkoutKey: options.production
-                        ? options.prodCheckoutKey
-                        : options.testCheckoutKey,
+                    checkoutKey: options.production ? options.prodCheckoutKey : options.testCheckoutKey,
                     environment: options.production,
                     paymentId: response.paymentId,
                     language: options.lang,
@@ -144,23 +130,13 @@ export default async function runCreateCheckout(options) {
                     return configResponse;
                 } catch (error) {
                     if (error.response && error.response.status === 401) {
-                        console.error(
-                            '\nError: The supplied checkout key is incorrect.'
-                        );
+                        console.error('\nError: The supplied checkout key is incorrect.');
                     } else if (error.code === 'ECONNABORTED') {
-                        console.error(
-                            chalk.red.bold('ERROR: Request timed out')
-                        );
+                        console.error(chalk.red.bold('ERROR: Request timed out'));
                     } else {
-                        const payloadLog = util.inspect(postData, {
-                            depth: null,
-                            colors: true,
-                            maxArrayLength: null,
-                        });
+                        const payloadLog = colorize(JSON.stringify(postData, null, 2));
                         console.error(
-                            chalk.red.bold(
-                                `\nERROR: HTTP ${error.response.status}`
-                            ) +
+                            chalk.red.bold(`\nERROR: HTTP ${error.response.status}`) +
                                 `\nError posting ${url}\nPayload:\n${payloadLog}`
                         );
                     }
@@ -169,17 +145,8 @@ export default async function runCreateCheckout(options) {
             }
             if (message === 'payment-completed') {
                 log(chalk.green.bold('\nFetching payment:'));
-                const retrieveResponse = await retrievePayment(
-                    response.paymentId,
-                    options
-                );
-                log(
-                    util.inspect(retrieveResponse.data, {
-                        depth: null,
-                        colors: true,
-                        maxArrayLength: null,
-                    })
-                );
+                const retrieveResponse = await retrievePayment(response.paymentId, options);
+                log(colorize(JSON.stringify(retrieveResponse.data, null, 2)));
                 serverProcess.kill();
                 process.exit(1);
             }

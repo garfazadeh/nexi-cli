@@ -1,6 +1,6 @@
 import axios from 'axios';
 import chalk from 'chalk';
-import util from 'node:util';
+import { colorize } from 'json-colorizer';
 
 import configPromise from '../utils/config.js';
 
@@ -8,14 +8,7 @@ const config = await configPromise;
 
 const checkoutUrl = 'https://test.checkout.dibspayment.eu';
 
-export async function checkoutPay(
-    paymentId,
-    amount,
-    expiryYear,
-    expiryMonth,
-    testCardNumber,
-    testCheckoutKey
-) {
+export async function checkoutPay(paymentId, amount, expiryYear, expiryMonth, testCardNumber, testCheckoutKey) {
     const url = checkoutUrl + '/api/v1/pay';
     const payload = {
         type: 'card',
@@ -45,10 +38,7 @@ export async function checkoutPay(
         return response.data.redirectUrl;
     } catch (error) {
         if (error.response) {
-            console.error(
-                chalk.red.bold(`\nERROR: HTTP ${error.response.status}`) +
-                    `\n${error.response.statusText}`
-            );
+            console.error(chalk.red.bold(`\nERROR: HTTP ${error.response.status}`) + `\n${error.response.statusText}`);
         } else if (error.code === 'ECONNABORTED') {
             console.error(chalk.red.bold('ERROR: Request timed out'));
         } else {
@@ -96,18 +86,11 @@ export async function pares(paymentId, ThreedsSessionId, testCheckoutKey) {
         return response.data;
     } catch (error) {
         if (error.response) {
-            console.error(
-                chalk.red.bold(`\nERROR: HTTP ${error.response.status}`) +
-                    `\n${error.response.statusText}`
-            );
+            console.error(chalk.red.bold(`\nERROR: HTTP ${error.response.status}`) + `\n${error.response.statusText}`);
         } else if (error.code === 'ECONNABORTED') {
             console.error(chalk.red.bold('ERROR: Request timed out'));
         } else {
-            const payloadLog = util.inspect(payload, {
-                depth: null,
-                colors: true,
-                maxArrayLength: null,
-            });
+            const payloadLog = colorize(JSON.stringify(payload, null, 2));
             console.error(
                 chalk.red.bold(`\nERROR: HTTP ${error.response.status}`) +
                     `\nError posting ${url}\nPayload:\n${payloadLog}`

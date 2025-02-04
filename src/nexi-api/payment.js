@@ -1,5 +1,6 @@
 import axios from 'axios';
 import chalk from 'chalk';
+import { colorize } from 'json-colorizer';
 
 const live = 'https://api.dibspayment.eu/v1';
 const test = 'https://test.api.dibspayment.eu/v1';
@@ -23,6 +24,11 @@ function errorHandling(error) {
                 chalk.bold('\nHeaders:\n') +
                 error.response.config.headers
         );
+        if (error.response.data) {
+            console.error(
+                chalk.bold('\nResponse Body:\n') + JSON.stringify(error.response.data, null, 2) // Pretty-print response body
+            );
+        }
     } else if (error.code === 'ECONNABORTED') {
         console.error(chalk.red.bold('ERROR: Request timed out'));
     }
@@ -66,11 +72,7 @@ export async function createPayment(payload, options) {
 
 export async function updateReference(paymentId, payload, options) {
     const environmentConfig = getBaseUrlAndCredentials(options);
-    const url =
-        environmentConfig.baseUrl +
-        '/payments/' +
-        paymentId +
-        '/referenceinformation';
+    const url = environmentConfig.baseUrl + '/payments/' + paymentId + '/referenceinformation';
     try {
         const response = await axios.put(url, payload, {
             headers: {
@@ -88,8 +90,7 @@ export async function updateReference(paymentId, payload, options) {
 
 export async function updateOrder(paymentId, payload, options) {
     const environmentConfig = getBaseUrlAndCredentials(options);
-    const url =
-        environmentConfig.baseUrl + '/payments/' + paymentId + '/orderitems';
+    const url = environmentConfig.baseUrl + '/payments/' + paymentId + '/orderitems';
     try {
         const response = await axios.put(url, payload, {
             headers: {
@@ -107,8 +108,7 @@ export async function updateOrder(paymentId, payload, options) {
 
 export async function updateMyReference(paymentId, payload, options) {
     const environmentConfig = getBaseUrlAndCredentials(options);
-    const url =
-        environmentConfig.baseUrl + '/payments/' + paymentId + '/myreference';
+    const url = environmentConfig.baseUrl + '/payments/' + paymentId + '/myreference';
     try {
         const response = await axios.put(url, payload, {
             headers: {
@@ -126,8 +126,7 @@ export async function updateMyReference(paymentId, payload, options) {
 
 export async function terminatePayment(paymentId, options) {
     const environmentConfig = getBaseUrlAndCredentials(options);
-    const url =
-        environmentConfig.baseUrl + '/payments/' + paymentId + '/terminate';
+    const url = environmentConfig.baseUrl + '/payments/' + paymentId + '/terminate';
     try {
         const response = await axios.put(
             url,
@@ -153,8 +152,7 @@ export async function terminatePayment(paymentId, options) {
 
 export async function cancelPayment(paymentId, payload, options) {
     const environmentConfig = getBaseUrlAndCredentials(options);
-    const url =
-        environmentConfig.baseUrl + '/payments/' + paymentId + '/cancels';
+    const url = environmentConfig.baseUrl + '/payments/' + paymentId + '/cancels';
     try {
         const response = await axios.post(url, payload, {
             headers: {
@@ -172,8 +170,7 @@ export async function cancelPayment(paymentId, payload, options) {
 
 export async function chargePayment(paymentId, payload, options) {
     const environmentConfig = getBaseUrlAndCredentials(options);
-    const url =
-        environmentConfig.baseUrl + '/payments/' + paymentId + '/charges';
+    const url = environmentConfig.baseUrl + '/payments/' + paymentId + '/charges';
     try {
         const response = await axios.post(url, payload, {
             headers: {
@@ -227,8 +224,7 @@ export async function refundCharge(chargeId, payload, options) {
 
 export async function refundPayment(paymentId, payload, options) {
     const environmentConfig = getBaseUrlAndCredentials(options);
-    const url =
-        environmentConfig.baseUrl + '/payments/' + paymentId + '/refunds';
+    const url = environmentConfig.baseUrl + '/payments/' + paymentId + '/refunds';
     try {
         const response = await axios.post(url, payload, {
             headers: {
@@ -264,8 +260,7 @@ export async function retrieveRefund(refundId, options) {
 
 export async function cancelPendingRefund(refundId, options) {
     const environmentConfig = getBaseUrlAndCredentials(options);
-    const url =
-        environmentConfig.baseUrl + '/pending-refund/' + refundId + '/cancel';
+    const url = environmentConfig.baseUrl + '/pending-refund/' + refundId + '/cancel';
     try {
         const response = await axios.post(url, {
             headers: {

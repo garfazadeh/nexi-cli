@@ -1,4 +1,4 @@
-import util from 'node:util';
+import { colorize } from 'json-colorizer';
 
 import { createPayment, retrievePayment } from '../nexi-api/payment.js';
 import configPromise from '../utils/config.js';
@@ -13,7 +13,7 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export default async function runCreateCompletedCheckout(options, arg) {
+export default async function runMockPayment(options, arg) {
     // create array for responses
     const responses = [];
     const setDelay = 1000 / config.requestLimit;
@@ -27,18 +27,14 @@ export default async function runCreateCompletedCheckout(options, arg) {
     for (let i = 0; i < arg; i++) {
         try {
             // create payment request
-            const payload = generatePayload(options);
+            const payload = await generatePayload(options);
 
             // create payment
             const createdPayment = await createPayment(payload, options);
             const paymentId = createdPayment.paymentId;
 
             // finalize checkout
-            const paid = await finalizeCheckout(
-                paymentId,
-                payload.order.amount,
-                options.testCheckoutKey
-            );
+            const paid = await finalizeCheckout(paymentId, payload.order.amount, options.testCheckoutKey);
 
             // fetch finalized payment
             const response = await retrievePayment(paymentId, options);
@@ -47,10 +43,7 @@ export default async function runCreateCompletedCheckout(options, arg) {
             await delay(setDelay);
         } catch (error) {
             // Handle any errors that may be thrown during the process
-            console.error(
-                'Creation of completed checkouts failed:',
-                error.response.statusText
-            );
+            console.error('Creation of completed checkouts failed:', error.response.statusText);
         }
     }
     let tableContent = [];
@@ -58,8 +51,7 @@ export default async function runCreateCompletedCheckout(options, arg) {
         tableContent = await responses.map(response => {
             const { payment } = response;
             const { orderDetails, paymentDetails, summary } = payment;
-            const formatAmount = amount =>
-                amount && amount !== 0 ? (amount / 100).toFixed(2) : 0;
+            const formatAmount = amount => (amount && amount !== 0 ? (amount / 100).toFixed(2) : 0);
             const row = {
                 paymentId: payment.paymentId,
                 currency: orderDetails.currency,
@@ -68,8 +60,7 @@ export default async function runCreateCompletedCheckout(options, arg) {
                 chargedAmount: formatAmount(summary.chargedAmount) || '',
             };
             if (payment.unscheduledSubscription) {
-                row.unscheduledSubscriptionId =
-                    payment.unscheduledSubscription.unscheduledSubscriptionId;
+                row.unscheduledSubscriptionId = payment.unscheduledSubscription.unscheduledSubscriptionId;
             }
             if (payment.subscription) {
                 row.scheduledSubscriptionId = payment.subscription.id;
@@ -80,13 +71,7 @@ export default async function runCreateCompletedCheckout(options, arg) {
         console.table(tableContent);
     } else {
         const resultList = await responses.map(response => {
-            console.log(
-                util.inspect(response, {
-                    depth: null,
-                    colors: true,
-                    maxArrayLength: null,
-                })
-            );
+            console.log(colorize(JSON.stringify(response, null, 2)));
         });
     }
 

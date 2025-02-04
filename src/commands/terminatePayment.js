@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import { readFileSync } from 'fs';
-import util from 'node:util';
+import { colorize } from 'json-colorizer';
 
 import { terminatePayment } from '../nexi-api/payment.js';
 import configPromise from '../utils/config.js';
@@ -69,13 +69,7 @@ export default async function runTerminatePayment(options, arg) {
     } else {
         console.log('');
         const resultList = await responses.map(response => {
-            console.log(
-                util.inspect(response, {
-                    depth: null,
-                    colors: true,
-                    maxArrayLength: null,
-                })
-            );
+            console.log(colorize(JSON.stringify(response, null, 2)));
         });
     }
 
