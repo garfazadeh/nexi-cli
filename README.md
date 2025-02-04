@@ -102,10 +102,10 @@ Arguments:
   paymentId                   Payment ID
 
 Options:
-  --prod-secret-key <string>  Your production secret API key
-  --test-secret-key <string>  Your test secret API key
   -p, --production            Use production environment (default: false)
   --no-production
+  --prod-secret-key <string>  Your production secret API key
+  --test-secret-key <string>  Your test secret API key
   -e, --export                Export table to CSV-file (default: false)
   --no-export
   -t, --table                 Display results in a table
@@ -124,10 +124,14 @@ Usage: nexi-cli create payment [options]
 Creates payment
 
 Options:
+  -c, --currency <code>              Set checkout currency (default: "SEK")
   -C, --charge                       Charge payment automatically if reserved
                                      (default: true)
   --no-charge
-  -c, --currency <code>              Set checkout currency (default: "SEK")
+  -o, --order-value <amount>         Set the total order value of all order
+                                     items
+  -s, --scheduled                    Create scheduled subscription
+  -u, --unscheduled                  Create unscheduled subscription
   --consumer                         Automatically adds consumer object
                                      (default: true)
   --no-consumer
@@ -141,14 +145,10 @@ Options:
   -m, --mhcd                         Hides address fields in checkout (default:
                                      true)
   --no-mhcd
-  -o, --order-value <amount>         Set the total order value of all order
-                                     items
-  --port                             Server port
-  -s, --scheduled                    Create scheduled subscription
-  -u, --unscheduled                  Create unscheduled subscription
   --shipping-countries <codes>       Specify enabled shipping countries
   --country-code <code>              Set default country
   --public-device                    Prevents cookies from being read or saved
+  --port                             Server port
   -e, --export                       Export table to CSV-file (default: false)
   --no-export
   -t, --table                        Display results in a table
@@ -166,7 +166,51 @@ Options:
 ```
 Usage: nexi-cli charge payment [options] [paymentId]
 
-Returns a payload for a create payment request
+Charge a reserved payment
+
+Arguments:
+  paymentId                   Payment ID
+
+Options:
+  -e, --export                Export table to CSV-file (default: false)
+  --no-export
+  -t, --table                 Display results in a table
+  --no-table
+  -v, --verbose               Output additional information (default: true)
+  --no-verbose
+  -d, --dryrun                Outputs generated request without sending it
+  -o, --order-value <amount>  Set the total order value of all order items
+  -h, --help                  display help for command
+```
+
+### refund charge
+
+```
+Usage: nexi-cli refund charge [options] [chargeId]
+
+Refund a charge
+
+Arguments:
+  chargeId                    Charge ID
+
+Options:
+  -e, --export                Export table to CSV-file (default: false)
+  --no-export
+  -t, --table                 Display results in a table
+  --no-table
+  -v, --verbose               Output additional information (default: true)
+  --no-verbose
+  -d, --dryrun                Outputs generated request without sending it
+  -o, --order-value <amount>  Set the total order value of all order items
+  -h, --help                  display help for command
+```
+
+### refund payment
+
+```
+Usage: nexi-cli refund payment [options] [paymentId]
+
+Refund a charged payment
 
 Arguments:
   paymentId                   Payment ID
@@ -191,14 +235,14 @@ Usage: nexi-cli init checkout [options]
 Create a embedded checkout or URL
 
 Options:
-  --prod-secret-key <string>         Your production secret API key
-  --test-secret-key <string>         Your test secret API key
-  -p, --production                   Use production environment (default: false)
-  --no-production
+  -c, --currency <code>              Set checkout currency (default: "SEK")
   -C, --charge                       Charge payment automatically if reserved
                                      (default: true)
   --no-charge
-  -c, --currency <code>              Set checkout currency (default: "SEK")
+  -o, --order-value <amount>         Set the total order value of all order
+                                     items
+  -s, --scheduled                    Create scheduled subscription
+  -u, --unscheduled                  Create unscheduled subscription
   --consumer                         Automatically adds consumer object
                                      (default: true)
   --no-consumer
@@ -212,14 +256,10 @@ Options:
   -m, --mhcd                         Hides address fields in checkout (default:
                                      true)
   --no-mhcd
-  -o, --order-value <amount>         Set the total order value of all order
-                                     items
-  --port                             Server port
-  -s, --scheduled                    Create scheduled subscription
-  -u, --unscheduled                  Create unscheduled subscription
   --shipping-countries <codes>       Specify enabled shipping countries
   --country-code <code>              Set default country
   --public-device                    Prevents cookies from being read or saved
+  --port                             Server port
   -e, --export                       Export table to CSV-file (default: false)
   --no-export
   -t, --table                        Display results in a table
@@ -227,6 +267,10 @@ Options:
   -v, --verbose                      Output additional information (default:
                                      true)
   --no-verbose
+  -p, --production                   Use production environment (default: false)
+  --no-production
+  --prod-secret-key <string>         Your production secret API key
+  --test-secret-key <string>         Your test secret API key
   --test-checkout-key <string>       Your test checkout key
   --prod-checkout-key <string>       Your production checkout key
   -f, --finalized-event              Sends payment-order-finalized as false
@@ -245,14 +289,14 @@ Arguments:
   number                             Number of completed payments
 
 Options:
-  --prod-secret-key <string>         Your production secret API key
-  --test-secret-key <string>         Your test secret API key
-  -p, --production                   Use production environment (default: false)
-  --no-production
+  -c, --currency <code>              Set checkout currency (default: "SEK")
   -C, --charge                       Charge payment automatically if reserved
                                      (default: true)
   --no-charge
-  -c, --currency <code>              Set checkout currency (default: "SEK")
+  -o, --order-value <amount>         Set the total order value of all order
+                                     items
+  -s, --scheduled                    Create scheduled subscription
+  -u, --unscheduled                  Create unscheduled subscription
   --consumer                         Automatically adds consumer object
                                      (default: true)
   --no-consumer
@@ -266,14 +310,10 @@ Options:
   -m, --mhcd                         Hides address fields in checkout (default:
                                      true)
   --no-mhcd
-  -o, --order-value <amount>         Set the total order value of all order
-                                     items
-  --port                             Server port
-  -s, --scheduled                    Create scheduled subscription
-  -u, --unscheduled                  Create unscheduled subscription
   --shipping-countries <codes>       Specify enabled shipping countries
   --country-code <code>              Set default country
   --public-device                    Prevents cookies from being read or saved
+  --port                             Server port
   -e, --export                       Export table to CSV-file (default: false)
   --no-export
   -t, --table                        Display results in a table
@@ -281,6 +321,10 @@ Options:
   -v, --verbose                      Output additional information (default:
                                      true)
   --no-verbose
+  -p, --production                   Use production environment (default: false)
+  --no-production
+  --prod-secret-key <string>         Your production secret API key
+  --test-secret-key <string>         Your test secret API key
   -h, --help                         display help for command
 ```
 
@@ -295,10 +339,10 @@ Arguments:
   paymentId                   Payment ID
 
 Options:
-  --prod-secret-key <string>  Your production secret API key
-  --test-secret-key <string>  Your test secret API key
   -p, --production            Use production environment (default: false)
   --no-production
+  --prod-secret-key <string>  Your production secret API key
+  --test-secret-key <string>  Your test secret API key
   -e, --export                Export table to CSV-file (default: false)
   --no-export
   -t, --table                 Display results in a table
@@ -319,19 +363,33 @@ Options:
 - [x] Retrieve payment information
 - [x] Create checkout
     - [x] Create embedded checkout
+        - [x] Dark theme
+        - [ ] Freeze / Thaw checkout
+        - [ ] Checkout flows
+            - [ ] Integrated cart
+            - [ ] Shipping handling
+            - [ ] Native forms
     - [x] Create hosted checkout
-- [x] Create reservations
+- [x] Mock
+    - [x] Card payments
+    - [ ] Swish payments
 - [x] Create subscriptions
     - [x] Create scheduled subscriptions
     - [x] Create unscheduled subscriptions
-- [x] Webhooks support
-- [x] Terminate payment
-- [ ] Cancel payments
-- [ ] Charge payments
-    - [ ] Single one-off charges
+- [x] Charge payments
+    - [x] Single one-off charges
     - [ ] Bulk subscription charges
     - [ ] Single subscription charges
-- [ ] Refund payments
+- [x] Refund
+    - [x] Refund payments
+    - [x] Refund charges
+- [x] Webhooks support
+- [x] Terminate payment
+- [ ] Update payments
+    - [ ] Update reference
+    - [ ] Update order
+    - [ ] Update myReference
+- [ ] Cancel payments
 - [ ] Verify subscriptions
 - [ ] Retrieve bulk
 - [ ] Reconciliate payments

@@ -217,14 +217,14 @@ export default async function generatePayload(options) {
 
 export async function generateChargePayload(options) {
     const faker = await loadFakerLocale(options.consumerLocale);
-    const items = generateOrderItems(Math.ceil(Math.random() * 3), faker, options.orderValue);
+    const orderItems = generateOrderItems(Math.ceil(Math.random() * 3), faker, options.orderValue);
     if (!options.orderValue) {
-        options.orderValue = items.reduce((sum, item) => sum + item.netTotalAmount, 0);
+        options.orderValue = orderItems.reduce((sum, item) => sum + item.netTotalAmount, 0);
     }
 
     const payload = {
         amount: options.orderValue,
-        items,
+        orderItems,
     };
 
     return payload;

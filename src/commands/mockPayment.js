@@ -1,3 +1,4 @@
+import { response } from 'express';
 import { colorize } from 'json-colorizer';
 
 import { createPayment, retrievePayment } from '../nexi-api/payment.js';
@@ -34,7 +35,7 @@ export default async function runMockPayment(options, arg) {
             const paymentId = createdPayment.paymentId;
 
             // finalize checkout
-            const paid = await finalizeCheckout(paymentId, payload.order.amount, options.testCheckoutKey);
+            await finalizeCheckout(paymentId, payload.order.amount, options.testCheckoutKey);
 
             // fetch finalized payment
             const response = await retrievePayment(paymentId, options);
@@ -46,9 +47,10 @@ export default async function runMockPayment(options, arg) {
             console.error('Creation of completed checkouts failed:', error.response.statusText);
         }
     }
+    process.stdout.write('\r' + ' '.repeat(80) + '\r');
     let tableContent = [];
     if (options.table) {
-        tableContent = await responses.map(response => {
+        tableContent = responses.map(response => {
             const { payment } = response;
             const { orderDetails, paymentDetails, summary } = payment;
             const formatAmount = amount => (amount && amount !== 0 ? (amount / 100).toFixed(2) : 0);
@@ -65,12 +67,14 @@ export default async function runMockPayment(options, arg) {
             if (payment.subscription) {
                 row.scheduledSubscriptionId = payment.subscription.id;
             }
+            if (payment.charges) {
+                row.chargeId = payment.charges[0].chargeId;
+            }
             return row;
         });
-        console.log('\n');
         console.table(tableContent);
     } else {
-        const resultList = await responses.map(response => {
+        responses.forEach(response => {
             console.log(colorize(JSON.stringify(response, null, 2)));
         });
     }
@@ -85,6 +89,6 @@ export default async function runMockPayment(options, arg) {
             { label: 'Masked PAN', value: 'maskedPan' },
             { label: 'Card Expiry date', value: 'expiryDate' },
         ];
-        writeCsv('payment_ids.csv', responses, fields);
+        writeCsv('payment_ids.csv', tableContent, fields);
     }
 }

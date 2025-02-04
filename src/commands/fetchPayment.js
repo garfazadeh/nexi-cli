@@ -49,20 +49,31 @@ export default async function runFetchPayment(options, arg) {
 
     const responses = [];
     const setDelay = 1000 / config.requestLimit;
-    for (let i = 0; i < paymentIds.length; i++) {
+    if (paymentIds.length >= 2) {
+        for (let i = 0; i < paymentIds.length; i++) {
+            try {
+                const response = await retrievePayment(paymentIds[i], options);
+                responses.push(response.data);
+                updateLoader(i + 1, paymentIds.length, 'Fetching payments');
+                await delay(setDelay);
+            } catch {
+                process.exit(1);
+            }
+        }
+    } else {
         try {
-            const response = await retrievePayment(paymentIds[i], options);
+            const response = await retrievePayment(paymentIds[0], options);
             responses.push(response.data);
-            updateLoader(i + 1, paymentIds.length, 'Fetching payments');
-            await delay(setDelay);
         } catch {
             process.exit(1);
         }
     }
+    process.stdout.write('\r' + ' '.repeat(80) + '\r');
+
     let tableContent = [];
     if (options.table) {
         // format the response object to a flat structure
-        tableContent = await responses.map(response => {
+        tableContent = responses.map(response => {
             const { payment } = response;
             const { orderDetails, paymentDetails, summary } = payment;
             const formatAmount = amount => (amount && amount !== 0 ? (amount / 100).toFixed(2) : 0);
@@ -77,11 +88,9 @@ export default async function runFetchPayment(options, arg) {
                 cancelledAmount: formatAmount(summary.cancelledAmount) || '',
             };
         });
-        console.log('\n');
         console.table(tableContent);
     } else {
-        console.log('');
-        const resultList = await responses.map(response => {
+        responses.forEach(response => {
             console.log(colorize(JSON.stringify(response, null, 2)));
         });
     }

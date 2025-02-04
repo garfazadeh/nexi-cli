@@ -9,6 +9,8 @@ const commands = [
     { name: 'fetch payment', section: 'fetch payment' },
     { name: 'create payment', section: 'create payment' },
     { name: 'charge payment', section: 'charge payment' },
+    { name: 'refund charge', section: 'refund charge' },
+    { name: 'refund payment', section: 'refund payment' },
     { name: 'init checkout', section: 'init checkout' },
     { name: 'mock payment', section: 'mock payment' },
     { name: 'terminate payment', section: 'terminate payment' },

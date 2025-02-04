@@ -33,7 +33,6 @@ function addCommonOptions(cmd) {
     return cmd
         .option('-e, --export', 'Export table to CSV-file', config.export)
         .option('--no-export')
-
         .option('-t, --table', 'Display results in a table')
         .option('--no-table')
         .option('-v, --verbose', 'Output additional information', config.verbose)
@@ -42,17 +41,20 @@ function addCommonOptions(cmd) {
 
 function addSecretKeysOptions(cmd) {
     return cmd
-        .option('--prod-secret-key <string>', 'Your production secret API key')
-        .option('--test-secret-key <string>', 'Your test secret API key')
         .option('-p, --production', 'Use production environment', config.production || false)
-        .option('--no-production');
+        .option('--no-production')
+        .option('--prod-secret-key <string>', 'Your production secret API key')
+        .option('--test-secret-key <string>', 'Your test secret API key');
 }
 
 function addCreatePaymentOptions(cmd) {
     return cmd
+        .option('-c, --currency <code>', 'Set checkout currency', config.currency || 'EUR')
         .option('-C, --charge', 'Charge payment automatically if reserved', config.charge || false)
         .option('--no-charge')
-        .option('-c, --currency <code>', 'Set checkout currency', config.currency || 'EUR')
+        .option('-o, --order-value <amount>', 'Set the total order value of all order items')
+        .option('-s, --scheduled', 'Create scheduled subscription')
+        .option('-u, --unscheduled', 'Create unscheduled subscription')
         .option('--consumer', 'Automatically adds consumer object', config.consumer || false)
         .option('--no-consumer')
         .option(
@@ -66,13 +68,10 @@ function addCreatePaymentOptions(cmd) {
         .option('-H, --hosted', 'Hosted mode provides checkout link')
         .option('-m, --mhcd', 'Hides address fields in checkout', config.mhcd || false)
         .option('--no-mhcd')
-        .option('-o, --order-value <amount>', 'Set the total order value of all order items')
-        .option('--port', 'Server port', config.port)
-        .option('-s, --scheduled', 'Create scheduled subscription')
-        .option('-u, --unscheduled', 'Create unscheduled subscription')
         .option('--shipping-countries <codes>', 'Specify enabled shipping countries', value => value.split(','))
         .option('--country-code <code>', 'Set default country')
-        .option('--public-device', 'Prevents cookies from being read or saved');
+        .option('--public-device', 'Prevents cookies from being read or saved')
+        .option('--port', 'Server port', config.port);
 }
 
 program
@@ -80,15 +79,13 @@ program
     .description(
         chalk.bold.blue('Nexi Checkout CLI') + chalk.dim('\nA CLI tool to interact with Nexi Checkout Payment API')
     )
-    .version('0.9.2');
+    .version('0.9.3');
 
 const fetch = program.command('fetch').description('fetch information');
 const create = program.command('create').description('create payment');
-
 const charge = program.command('charge').description('charge payment');
-/*  const refund = program
-    .command('refund')
-    .description('Refund charges or payments');
+const refund = program.command('refund').description('refund charges or payments');
+/* 
 const update = program.command('update').description('Update payment');
 const cancel = program
     .command('cancel')
@@ -129,7 +126,7 @@ addCommonOptions(addCreatePaymentOptions(create.command('payment')))
     });
 
 addCommonOptions(charge.command('payment'))
-    .description('Returns a payload for a create payment request')
+    .description('Charge a reserved payment')
     .argument('[paymentId]', 'Payment ID')
     .option('-d, --dryrun', 'Outputs generated request without sending it')
     .option('-o, --order-value <amount>', 'Set the total order value of all order items')
@@ -139,7 +136,29 @@ addCommonOptions(charge.command('payment'))
         runChargePayment(mergedOptions, arg);
     });
 
-addCommonOptions(addCreatePaymentOptions(addSecretKeysOptions(init.command('checkout'))))
+addCommonOptions(refund.command('charge'))
+    .description('Refund a charge')
+    .argument('[chargeId]', 'Charge ID')
+    .option('-d, --dryrun', 'Outputs generated request without sending it')
+    .option('-o, --order-value <amount>', 'Set the total order value of all order items')
+    .action(async (arg, options) => {
+        const mergedOptions = applyConfigDefaults(options, config);
+        const { default: runChargePayment } = await import('../src/commands/refundCharge.js');
+        runChargePayment(mergedOptions, arg);
+    });
+
+addCommonOptions(refund.command('payment'))
+    .description('Refund a charged payment')
+    .argument('[paymentId]', 'Payment ID')
+    .option('-d, --dryrun', 'Outputs generated request without sending it')
+    .option('-o, --order-value <amount>', 'Set the total order value of all order items')
+    .action(async (arg, options) => {
+        const mergedOptions = applyConfigDefaults(options, config);
+        const { default: runChargePayment } = await import('../src/commands/refundPayment.js');
+        runChargePayment(mergedOptions, arg);
+    });
+
+addSecretKeysOptions(addCommonOptions(addCreatePaymentOptions(init.command('checkout'))))
     .description('Create a embedded checkout or URL')
     .option('--test-checkout-key <string>', 'Your test checkout key')
     .option('--prod-checkout-key <string>', 'Your production checkout key')
@@ -151,7 +170,7 @@ addCommonOptions(addCreatePaymentOptions(addSecretKeysOptions(init.command('chec
         runInitCheckout(mergedOptions);
     });
 
-addCommonOptions(addCreatePaymentOptions(addSecretKeysOptions(mock.command('payment'))))
+addSecretKeysOptions(addCommonOptions(addCreatePaymentOptions(mock.command('payment'))))
     .argument('[number]', 'Number of completed payments')
     .description('Create mock payments for testing purposes in test environment')
     .action(async (arg, options) => {
