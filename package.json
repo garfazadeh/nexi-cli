@@ -9,7 +9,7 @@
     "main": "./bin/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "generate-help": "node generate-help.js",
+        "generate-help": "node src/utils/generate-help.js",
         "precommit": "npm run generate-help"
     },
     "keywords": [],

@@ -19,8 +19,8 @@ const commands = [
 // Get the directory name of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Path to the README.md file
-const readmePath = path.join(__dirname, 'README.md');
+// Path to the README.md file two folders above
+const readmePath = path.join(__dirname, '..', '..', 'README.md');
 
 // Read the README.md file
 let readmeContent = fs.readFileSync(readmePath, 'utf8');
