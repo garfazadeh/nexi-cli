@@ -21,9 +21,8 @@ $ cd nexi-cli
 $ npm install
 ```
 
-3. When you run the script the first time it will create a config file located
-   in your config folder `~/.config/nexi-cli/config.yml`. Edit it and include
-   your keys.
+3. When you run the script the first time it will create a config file located in your config folder
+   `~/.config/nexi-cli/config.yml`. Edit it and include your keys.
 
 ```yml
 charge: false
@@ -42,18 +41,18 @@ requestLimit: 5
 testCheckoutKey:
 testSecretKey:
 themeDark:
-  backgroundColor: rgb(20, 22, 26)
-  buttonbackgroundColor: rgb(72, 199, 142)
-  buttonTextColor: rgb(20, 22, 26)
-  linkColor: rgb(72, 199, 142)
-  outlineColor: rgb(31, 34, 41)
-  panelColor: rgb(36, 41, 46)
-  panelLinkColor: rgb(72, 199, 142)
-  panelTextColor: rgb(200,200,200)
-  primaryColor: rgb(72, 199, 142)
-  primaryOutlineColor: rgb(72, 199, 142)
-  textColor: rgb(200,200,200)
-  useLightIcons: true
+    backgroundColor: rgb(20, 22, 26)
+    buttonbackgroundColor: rgb(72, 199, 142)
+    buttonTextColor: rgb(20, 22, 26)
+    linkColor: rgb(72, 199, 142)
+    outlineColor: rgb(31, 34, 41)
+    panelColor: rgb(36, 41, 46)
+    panelLinkColor: rgb(72, 199, 142)
+    panelTextColor: rgb(200,200,200)
+    primaryColor: rgb(72, 199, 142)
+    primaryOutlineColor: rgb(72, 199, 142)
+    textColor: rgb(200,200,200)
+    useLightIcons: true
 themeLight: {}
 verbose: false
 xApiKey:
@@ -79,148 +78,235 @@ Nexi Checkout CLI
 A CLI tool to interact with Nexi Checkout Payment API
 
 Options:
-  -V, --version                                 output the version number
-  -h, --help                                    display help for command
+  -V, --version   output the version number
+  -h, --help      display help for command
 
 Commands:
-  fetch-payment [options] [paymentId]           Fetch payment information individually or in bulk
-  create-payload [options]                      Returns a payload for a create payment request
-  create-checkout [options]                     Create a embedded checkout or URL
-  create-completed-checkout [options] [number]  Create completed checkout in test environment
-  terminate-payment [options] [paymentId]       Terminate payment information individually or in bulk
-  help [command]                                display help for command
+  fetch           fetch information
+  create          create payment
+  charge          charge payment
+  terminate       terminate payment
+  init            initiate checkout
+  mock            create mock payment
+  help [command]  display help for command
 ```
 
-### fetch-payment
+### fetch payment
 
 ```
-Usage: nexi-cli fetch-payment [options] [paymentId]
+Usage: nexi-cli fetch payment [options] [paymentId]
 
 Fetch payment information individually or in bulk
 
 Arguments:
-  paymentId                Payment ID
+  paymentId                   Payment ID
 
 Options:
-  -f, --file <path>        Path to file containing list of payment ID
-  -p, --production         Use production environment (default: false)
-  --prod-secret-key <key>  Your production secret API key
-  -e, --export             Export table to CSV-file (default: false)
-  -t, --table              Display results in a table
-  --test-secret-key <key>  Your test secret API key
-  -h, --help               display help for command
-```
-
-### create-payload
-
-```
-Usage: nexi-cli create-payload [options]
-
-Returns a payload for a create payment request
-
-Options:
-  -C, --charge                Charge payment automatically if reserved (default:
-                              true)
-  -c, --currency <code>       Set checkout currency (default: "SEK")
-  --consumer                  Automatically adds consumer object (default: true)
-  --consumer-locale <locale>  Available locales: 'da', 'de', 'de_AT', 'en',
-                              'nb_NO', 'sv' (default: "sv")
-  --consumer-type <type>      Set type of consumer generated (default: "B2C")
-  -H, --hosted                Hosted mode provides checkout link
-  -m, --mhcd                  Hides address fields in checkout (default: true)
-  --no-charge                 Disables automatic charge
-  --no-consumer               Automatically removes consumer object
-  --no-mhcd                   Displays address fields in checkout
+  --prod-secret-key <string>  Your production secret API key
+  --test-secret-key <string>  Your test secret API key
+  -p, --production            Use production environment (default: false)
+  --no-production
+  -e, --export                Export table to CSV-file (default: false)
+  --no-export
+  -t, --table                 Display results in a table
+  --no-table
+  -v, --verbose               Output additional information (default: true)
+  --no-verbose
+  -f, --file <path>           Path to file containing list of payment ID
   -h, --help                  display help for command
 ```
 
-### create-checkout
+### create payment
 
 ```
-Usage: nexi-cli create-checkout [options]
+Usage: nexi-cli create payment [options]
+
+Creates payment
+
+Options:
+  -C, --charge                       Charge payment automatically if reserved
+                                     (default: true)
+  --no-charge
+  -c, --currency <code>              Set checkout currency (default: "SEK")
+  --consumer                         Automatically adds consumer object
+                                     (default: true)
+  --no-consumer
+  --consumer-locale <locale>         Available locales: 'da', 'de', 'de_AT',
+                                     'en', 'nb_NO', 'sv' (default: "sv")
+  --consumer-type <type>             Set type of consumer generated (default:
+                                     "B2C")
+  --default-consumer-type <type>     Set default consumer type
+  --supported-consumer-type <types>  Set supported consumer types
+  -H, --hosted                       Hosted mode provides checkout link
+  -m, --mhcd                         Hides address fields in checkout (default:
+                                     true)
+  --no-mhcd
+  -o, --order-value <amount>         Set the total order value of all order
+                                     items
+  --port                             Server port
+  -s, --scheduled                    Create scheduled subscription
+  -u, --unscheduled                  Create unscheduled subscription
+  --shipping-countries <codes>       Specify enabled shipping countries
+  --country-code <code>              Set default country
+  --public-device                    Prevents cookies from being read or saved
+  -e, --export                       Export table to CSV-file (default: false)
+  --no-export
+  -t, --table                        Display results in a table
+  --no-table
+  -v, --verbose                      Output additional information (default:
+                                     true)
+  --no-verbose
+  -d, --dryrun                       Outputs generated request without sending
+                                     it
+  -h, --help                         display help for command
+```
+
+### charge payment
+
+```
+Usage: nexi-cli charge payment [options] [paymentId]
+
+Returns a payload for a create payment request
+
+Arguments:
+  paymentId                   Payment ID
+
+Options:
+  -e, --export                Export table to CSV-file (default: false)
+  --no-export
+  -t, --table                 Display results in a table
+  --no-table
+  -v, --verbose               Output additional information (default: true)
+  --no-verbose
+  -d, --dryrun                Outputs generated request without sending it
+  -o, --order-value <amount>  Set the total order value of all order items
+  -h, --help                  display help for command
+```
+
+### init checkout
+
+```
+Usage: nexi-cli init checkout [options]
 
 Create a embedded checkout or URL
 
 Options:
-  -C, --charge                  Charge payment automatically if reserved
-                                (default: true)
-  -c, --currency <code>         Set checkout currency (default: "SEK")
-  --consumer                    Automatically adds consumer object (default:
-                                true)
-  --consumer-locale <locale>    Set consumer locale (default: "sv")
-  --consumer-type <type>        Set consumer type (default: "B2C")
-  -f, --finalized-event         Sends payment-order-finalized as false
-  -H, --hosted                  Hosted mode provides checkout link
-  --lang <string>               Set checkout language (default: "sv-SE")
-  -m, --mhcd                    Hides address fields in checkout (default: true)
-  --no-charge                   Negate charge
-  --no-consumer                 Negate consumer
-  --no-mhcd                     Negate mhcd
-  --no-production               Negate production
-  --no-verbose                  Negate verbose
-  -p, --production              Use production environment (default: false)
-  --prod-checkout-key <string>  Your production checkout key
-  --prod-secret-key <string>    Your production secret API key
-  --test-checkout-key <string>  Your test checkout key
-  --test-secret-key <string>    Your test secret API key
-  -v, --verbose                 Output additional information (default: true)
-  -h, --help                    display help for command
+  --prod-secret-key <string>         Your production secret API key
+  --test-secret-key <string>         Your test secret API key
+  -p, --production                   Use production environment (default: false)
+  --no-production
+  -C, --charge                       Charge payment automatically if reserved
+                                     (default: true)
+  --no-charge
+  -c, --currency <code>              Set checkout currency (default: "SEK")
+  --consumer                         Automatically adds consumer object
+                                     (default: true)
+  --no-consumer
+  --consumer-locale <locale>         Available locales: 'da', 'de', 'de_AT',
+                                     'en', 'nb_NO', 'sv' (default: "sv")
+  --consumer-type <type>             Set type of consumer generated (default:
+                                     "B2C")
+  --default-consumer-type <type>     Set default consumer type
+  --supported-consumer-type <types>  Set supported consumer types
+  -H, --hosted                       Hosted mode provides checkout link
+  -m, --mhcd                         Hides address fields in checkout (default:
+                                     true)
+  --no-mhcd
+  -o, --order-value <amount>         Set the total order value of all order
+                                     items
+  --port                             Server port
+  -s, --scheduled                    Create scheduled subscription
+  -u, --unscheduled                  Create unscheduled subscription
+  --shipping-countries <codes>       Specify enabled shipping countries
+  --country-code <code>              Set default country
+  --public-device                    Prevents cookies from being read or saved
+  -e, --export                       Export table to CSV-file (default: false)
+  --no-export
+  -t, --table                        Display results in a table
+  --no-table
+  -v, --verbose                      Output additional information (default:
+                                     true)
+  --no-verbose
+  --test-checkout-key <string>       Your test checkout key
+  --prod-checkout-key <string>       Your production checkout key
+  -f, --finalized-event              Sends payment-order-finalized as false
+  --lang <string>                    Set checkout language (default: "sv-SE")
+  -h, --help                         display help for command
 ```
 
-### create-completed-checkout
+### mock payment
 
 ```
-Usage: nexi-cli create-completed-checkout [options] [number]
+Usage: nexi-cli mock payment [options] [number]
 
-Create completed checkout in test environment
+Create mock payments for testing purposes in test environment
 
 Arguments:
-  number                      Number of checkouts
+  number                             Number of completed payments
 
 Options:
-  -C, --charge                Charge payment automatically if reserved (default:
-                              true)
-  -c, --currency <code>       Set checkout currency (default: "SEK")
-  --consumer                  Automatically adds consumer object (default: true)
-  --consumer-locale <locale>  Set consumer locale (default: "sv")
-  --consumer-type <type>      Set consumer type (default: "B2C")
-  -e, --export                Export table to CSV-file (default: false)
-  -H, --hosted                Hosted mode provides checkout link
-  -m, --mhcd                  Hides address fields in checkout (default: true)
-  --no-charge                 Negate charge
-  --no-consumer               Negate consumer
-  --no-export                 Negate export
-  --no-mhcd                   Negate mhcd
-  --no-verbose                Negate verbose
-  -S, --scheduled             Create scheduled subscription
-  -t, --table                 Display results in a table
-  --test-checkout-key <key>   Your test checkout API key
-  --test-secret-key <key>     Your test secret API key
-  -u, --unscheduled           Create unscheduled subscription
-  -v, --verbose               Output additional information (default: true)
-  -h, --help                  display help for command
+  --prod-secret-key <string>         Your production secret API key
+  --test-secret-key <string>         Your test secret API key
+  -p, --production                   Use production environment (default: false)
+  --no-production
+  -C, --charge                       Charge payment automatically if reserved
+                                     (default: true)
+  --no-charge
+  -c, --currency <code>              Set checkout currency (default: "SEK")
+  --consumer                         Automatically adds consumer object
+                                     (default: true)
+  --no-consumer
+  --consumer-locale <locale>         Available locales: 'da', 'de', 'de_AT',
+                                     'en', 'nb_NO', 'sv' (default: "sv")
+  --consumer-type <type>             Set type of consumer generated (default:
+                                     "B2C")
+  --default-consumer-type <type>     Set default consumer type
+  --supported-consumer-type <types>  Set supported consumer types
+  -H, --hosted                       Hosted mode provides checkout link
+  -m, --mhcd                         Hides address fields in checkout (default:
+                                     true)
+  --no-mhcd
+  -o, --order-value <amount>         Set the total order value of all order
+                                     items
+  --port                             Server port
+  -s, --scheduled                    Create scheduled subscription
+  -u, --unscheduled                  Create unscheduled subscription
+  --shipping-countries <codes>       Specify enabled shipping countries
+  --country-code <code>              Set default country
+  --public-device                    Prevents cookies from being read or saved
+  -e, --export                       Export table to CSV-file (default: false)
+  --no-export
+  -t, --table                        Display results in a table
+  --no-table
+  -v, --verbose                      Output additional information (default:
+                                     true)
+  --no-verbose
+  -h, --help                         display help for command
 ```
 
-### terminate-payment
+### terminate payment
 
 ```
-Usage: nexi-cli terminate-payment [options] [paymentId]
+Usage: nexi-cli terminate payment [options] [paymentId]
 
 Terminate payment information individually or in bulk
 
 Arguments:
-  paymentId                Payment ID
+  paymentId                   Payment ID
 
 Options:
-  -e, --export             Export table to CSV-file (default: false)
-  -f, --file <path>        Path to file containing list of payment ID
-  --no-export              Negate export
-  --no-production          Negate production
-  -p, --production         Use production environment (default: false)
-  --prod-secret-key <key>  Your production secret API key
-  -t, --table              Display results in a table
-  --test-secret-key <key>  Your test secret API key
-  -h, --help               display help for command
+  --prod-secret-key <string>  Your production secret API key
+  --test-secret-key <string>  Your test secret API key
+  -p, --production            Use production environment (default: false)
+  --no-production
+  -e, --export                Export table to CSV-file (default: false)
+  --no-export
+  -t, --table                 Display results in a table
+  --no-table
+  -v, --verbose               Output additional information (default: true)
+  --no-verbose
+  -f, --file <path>           Path to file containing list of payment ID
+  -h, --help                  display help for command
 ```
 
 ## Screenshots

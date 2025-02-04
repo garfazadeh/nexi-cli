@@ -131,7 +131,7 @@ addCommonOptions(addCreatePaymentOptions(create.command('payment')))
 addCommonOptions(charge.command('payment'))
     .description('Returns a payload for a create payment request')
     .argument('[paymentId]', 'Payment ID')
-    .option('-d, --dryrun', 'Outputs generated request')
+    .option('-d, --dryrun', 'Outputs generated request without sending it')
     .option('-o, --order-value <amount>', 'Set the total order value of all order items')
     .action(async (arg, options) => {
         const mergedOptions = applyConfigDefaults(options, config);

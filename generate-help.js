@@ -6,11 +6,12 @@ import { fileURLToPath } from 'url';
 
 // Define the commands and their corresponding sections in the README.md
 const commands = [
-    { name: 'fetch-payment', section: 'fetch-payment' },
-    { name: 'create-payload', section: 'create-payload' },
-    { name: 'create-checkout', section: 'create-checkout' },
-    { name: 'create-completed-checkout', section: 'create-completed-checkout' },
-    { name: 'terminate-payment', section: 'terminate-payment' },
+    { name: 'fetch payment', section: 'fetch payment' },
+    { name: 'create payment', section: 'create payment' },
+    { name: 'charge payment', section: 'charge payment' },
+    { name: 'init checkout', section: 'init checkout' },
+    { name: 'mock payment', section: 'mock payment' },
+    { name: 'terminate payment', section: 'terminate payment' },
 ];
 
 // Get the directory name of the current module
@@ -28,16 +29,10 @@ commands.forEach(({ name, section }) => {
     const startMarker = `### ${section}\n\n\`\`\``;
     const endMarker = '```';
     const startIndex = readmeContent.indexOf(startMarker);
-    const endIndex = readmeContent.indexOf(
-        endMarker,
-        startIndex + startMarker.length
-    );
+    const endIndex = readmeContent.indexOf(endMarker, startIndex + startMarker.length);
 
     if (startIndex !== -1 && endIndex !== -1) {
-        const before = readmeContent.substring(
-            0,
-            startIndex + startMarker.length
-        );
+        const before = readmeContent.substring(0, startIndex + startMarker.length);
         const after = readmeContent.substring(endIndex);
         readmeContent = `${before}\n${helpOutput}${after}`;
     }
