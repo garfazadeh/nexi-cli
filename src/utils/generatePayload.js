@@ -154,65 +154,125 @@ function generateOrderItems(number, faker, totalNetAmount = null) {
     return items;
 }
 
-export default async function generatePayload(options) {
+export default async function generatePayload(options, tunnel) {
     const faker = await loadFakerLocale(options.consumerLocale);
-    const consumer = options.consumer && (await createRandomConsumer(options, faker));
+    const consumer = options.consumer ? await createRandomConsumer(options, faker) : null;
     const items = generateOrderItems(Math.ceil(Math.random() * 3), faker, options.orderValue);
-    let totalAmount;
-    if (!options.orderValue) {
-        totalAmount = items.reduce((sum, item) => sum + item.netTotalAmount, 0);
-    } else {
-        totalAmount = options.orderValue;
-    }
+    const totalAmount = options.orderValue || calculateTotalAmount(items);
 
     const payload = {
-        order: {
-            items,
-            amount: totalAmount,
-            currency: options.currency,
-            reference: faker.string.hexadecimal({ length: 8, prefix: '#' }).toUpperCase(),
-        },
-        checkout: {
-            termsUrl: `http://localhost:${options.port}/terms`,
-            integrationType: options.hosted ? 'HostedPaymentPage' : 'EmbeddedCheckout',
-            merchantHandlesConsumerData: options.mhcd,
-            charge: options.charge,
-            ...(options.hosted
-                ? {
-                      returnUrl: `http://localhost:${options.port}/return`,
-                      cancelUrl: `http://localhost:${options.port}/cancel`,
-                  }
-                : {
-                      url: `http://localhost:${options.port}`,
-                  }),
-        },
+        order: createOrder(items, totalAmount, options.currency, faker),
+        checkout: createCheckout(options, consumer),
     };
 
-    options.publicDevice && (payload.checkout.publicDevice = true);
-    options.supportedConsumerType &&
-        ((payload.checkout.consumerType = payload.checkout.consumerType || {}),
-        (payload.checkout.consumerType.supportedTypes = options.supportedConsumerType));
-    options.defaultConsumerType &&
-        ((payload.checkout.consumerType = payload.checkout.consumerType || {}),
-        (payload.checkout.consumerType.default = options.defaultConsumerType));
+    if (tunnel) {
+        payload.notifications = createNotifications(tunnel, options);
+    }
 
-    options.shippingCountries &&
-        (payload.checkout.shippingCountries = options.shippingCountries.map(code => ({
-            countryCode: code,
-        })));
-
-    options.countryCode && (payload.checkout.countryCode = options.countryCode);
-    consumer && (payload.checkout.consumer = consumer);
-
-    options.scheduled &&
-        (payload.subscription = {
-            endDate: '2099-12-31T23:59:59.999Z',
-            interval: 0,
-        });
-
-    options.unscheduled && (payload.unscheduledSubscription = { create: true });
+    addOptionalFields(payload, options, consumer);
 
     return payload;
+}
+
+function calculateTotalAmount(items) {
+    return items.reduce((sum, item) => sum + item.netTotalAmount, 0);
+}
+
+function createOrder(items, totalAmount, currency, faker) {
+    return {
+        items,
+        amount: totalAmount,
+        currency,
+        reference: faker.string.hexadecimal({ length: 8, prefix: '#' }).toUpperCase(),
+    };
+}
+
+function createCheckout(options, consumer) {
+    const checkout = {
+        termsUrl: `http://localhost:${options.port}/terms`,
+        integrationType: options.hosted ? 'HostedPaymentPage' : 'EmbeddedCheckout',
+        merchantHandlesConsumerData: options.mhcd,
+        charge: options.charge,
+        ...(options.hosted
+            ? {
+                  returnUrl: `http://localhost:${options.port}/return`,
+                  cancelUrl: `http://localhost:${options.port}/cancel`,
+              }
+            : {
+                  url: `http://localhost:${options.port}`,
+              }),
+    };
+
+    if (options.publicDevice) {
+        checkout.publicDevice = true;
+    }
+
+    if (options.supportedConsumerType) {
+        checkout.consumerType = checkout.consumerType || {};
+        checkout.consumerType.supportedTypes = options.supportedConsumerType;
+    }
+
+    if (options.defaultConsumerType) {
+        checkout.consumerType = checkout.consumerType || {};
+        checkout.consumerType.default = options.defaultConsumerType;
+    }
+
+    if (options.shippingCountries) {
+        checkout.shippingCountries = options.shippingCountries.map(code => ({ countryCode: code }));
+    }
+
+    if (options.countryCode) {
+        checkout.countryCode = options.countryCode;
+    }
+
+    if (consumer) {
+        checkout.consumer = consumer;
+    }
+
+    return checkout;
+}
+
+function addOptionalFields(payload, options, consumer) {
+    if (options.scheduled) {
+        payload.subscription = {
+            endDate: '2099-12-31T23:59:59.999Z',
+            interval: 0,
+        };
+    }
+
+    if (options.unscheduled) {
+        payload.unscheduledSubscription = { create: true };
+    }
+}
+
+function createNotifications(tunnel, options) {
+    const allEvents = [
+        'payment.cancel.failed',
+        'payment.cancel.created',
+        'payment.charge.created',
+        'payment.charge.created.v2',
+        'payment.charge.failed',
+        'payment.charge.failed.v2',
+        'payment.created',
+        'payment.refund.completed',
+        'payment.refund.failed',
+        'payment.refund.initiated',
+        'payment.reservation.created',
+        'payment.reservation.created.v2',
+        'payment.reservation.failed',
+    ];
+
+    const selectedEvents = options.webhookEvents
+        ? options.webhookEvents.split(',').map(event => event.trim())
+        : allEvents;
+
+    return {
+        webHooks: selectedEvents.map(eventName => ({
+            eventName,
+            url: tunnel.url + '/webhook',
+            authorization: 'abcdef1234567890',
+        })),
+    };
 }
 
 export async function generateChargePayload(options) {

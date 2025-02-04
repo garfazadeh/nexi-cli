@@ -71,7 +71,8 @@ function addCreatePaymentOptions(cmd) {
         .option('--shipping-countries <codes>', 'Specify enabled shipping countries', value => value.split(','))
         .option('--country-code <code>', 'Set default country')
         .option('--public-device', 'Prevents cookies from being read or saved')
-        .option('--port', 'Server port', config.port);
+        .option('--port', 'Server port', config.port)
+        .option('--webhook-events <events>', 'Comma-separated list of webhook events to include');
 }
 
 program

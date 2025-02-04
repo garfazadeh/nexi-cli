@@ -17,77 +17,7 @@ const serverPath = resolve(new URL(import.meta.url).pathname, '../../../bin/serv
 export default async function runInitCheckout(options) {
     // create tunnel to receive webhooks
     const tunnel = await localtunnel({ port: config.port });
-
-    let payload = await generatePayload(options);
-    payload.notifications = {
-        webHooks: [
-            {
-                eventName: 'payment.cancel.failed',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.cancel.created',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.charge.created',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.charge.created.v2',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.charge.failed',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.charge.failed.v2',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.created',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.refund.completed',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.refund.failed',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.refund.initiated',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.reservation.created',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.reservation.created.v2',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-            {
-                eventName: 'payment.reservation.failed',
-                url: tunnel.url + '/webhook',
-                authorization: 'abcdef1234567890',
-            },
-        ],
-    };
+    let payload = await generatePayload(options, tunnel);
     if (options.verbose) {
         log(chalk.bold(`POST v1/payments`));
         log(colorize(JSON.stringify(payload, null, 2)));
