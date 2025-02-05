@@ -1,6 +1,5 @@
 import axios from 'axios';
 import chalk from 'chalk';
-import { colorize } from 'json-colorizer';
 
 const live = 'https://api.dibspayment.eu/v1';
 const test = 'https://test.api.dibspayment.eu/v1';

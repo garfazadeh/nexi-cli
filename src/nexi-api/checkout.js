@@ -42,11 +42,7 @@ export async function checkoutPay(paymentId, amount, expiryYear, expiryMonth, te
         } else if (error.code === 'ECONNABORTED') {
             console.error(chalk.red.bold('ERROR: Request timed out'));
         } else {
-            const payloadLog = util.inspect(payload, {
-                depth: null,
-                colors: true,
-                maxArrayLength: null,
-            });
+            const payloadLog = colorize(JSON.stringify(payload, null, 2));
             console.error(
                 chalk.red.bold(`\nERROR: HTTP ${error.response.status}`) +
                     `\nError posting ${url}\nPayload:\n${payloadLog}`

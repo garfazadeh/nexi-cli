@@ -1,6 +1,20 @@
-# nexi-cli
+# Nexi Checkout CLI
 
-This is a CLI tool to make it easy to interact with Nexi Checkout Payment API.
+This Node.js-based CLI tool interacts with
+[Nexi Checkout APIs](https://developer.nexigroup.com/nexi-checkout/en-EU/api/) by automatically generating requests and
+handling responses. It supports listening to webhooks and generating mock payments for testing purposes. Additionally,
+it also includes functionality to initialize the
+[Checkout JS SDK](https://developer.nexigroup.com/nexi-checkout/en-EU/api/checkout-js-sdk/) in a browser, making it
+useful for troubleshooting and demo purposes.
+
+## Features
+
+- Retrieve payment information
+- Create checkouts (embedded and hosted)
+- Mock payments for testing
+- Charge and refund payments
+- Webhooks support
+- Terminate payments
 
 ## Pre-requisites
 
@@ -149,6 +163,8 @@ Options:
   --country-code <code>              Set default country
   --public-device                    Prevents cookies from being read or saved
   --port                             Server port
+  --webhook-events <events>          Comma-separated list of webhook events to
+                                     include
   -e, --export                       Export table to CSV-file (default: false)
   --no-export
   -t, --table                        Display results in a table
@@ -260,6 +276,8 @@ Options:
   --country-code <code>              Set default country
   --public-device                    Prevents cookies from being read or saved
   --port                             Server port
+  --webhook-events <events>          Comma-separated list of webhook events to
+                                     include
   -e, --export                       Export table to CSV-file (default: false)
   --no-export
   -t, --table                        Display results in a table
@@ -314,6 +332,8 @@ Options:
   --country-code <code>              Set default country
   --public-device                    Prevents cookies from being read or saved
   --port                             Server port
+  --webhook-events <events>          Comma-separated list of webhook events to
+                                     include
   -e, --export                       Export table to CSV-file (default: false)
   --no-export
   -t, --table                        Display results in a table

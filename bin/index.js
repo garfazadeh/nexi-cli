@@ -18,7 +18,7 @@ function validateTarget(value) {
 function applyConfigDefaults(options, config) {
     // Iterate over the keys in config
     for (const key in config) {
-        if (config.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(config, key)) {
             // If the option is not provided (undefined or null), use the value from config
             if (options[key] === undefined || options[key] === null) {
                 options[key] = config[key];
@@ -118,6 +118,7 @@ addCommonOptions(addCreatePaymentOptions(create.command('payment')))
         const mergedOptions = applyConfigDefaults(options, config);
         try {
             validateTarget(mergedOptions.consumerLocale);
+            // eslint-disable-next-line no-unused-vars
         } catch (error) {
             console.error('Not a valid consumer locale');
             process.exit(1);

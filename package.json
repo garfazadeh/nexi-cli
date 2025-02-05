@@ -2,7 +2,7 @@
     "name": "nexi-cli",
     "version": "0.9.3",
     "type": "module",
-    "description": "",
+    "description": "A CLI tool to interact with Nexi Checkout Payment API",
     "bin": {
         "nexi-cli": "./bin/index.js"
     },
@@ -12,8 +12,22 @@
         "generate-help": "node src/utils/generate-help.js",
         "precommit": "npm run generate-help"
     },
-    "keywords": [],
-    "author": "Giv Arfazadeh",
+    "keywords": [
+        "cli",
+        "nexi",
+        "checkout",
+        "payment",
+        "api"
+    ],
+    "author": "Giv Arfazadeh <hello@giv.dev> (http://giv.dev)",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yourusername/nexi-cli.git"
+    },
+    "bugs": {
+        "url": "https://github.com/yourusername/nexi-cli/issues"
+    },
+    "homepage": "https://github.com/garfazadeh/nexi-cli#readme",
     "license": "ISC",
     "dependencies": {
         "@faker-js/faker": "^9.4.0",
@@ -35,6 +49,8 @@
     "devDependencies": {
         "@eslint/js": "^9.19.0",
         "@trivago/prettier-plugin-sort-imports": "^5.2.1",
+        "eslint": "^9.19.0",
+        "globals": "^15.14.0",
         "prettier": "^3.4.2"
     }
 }

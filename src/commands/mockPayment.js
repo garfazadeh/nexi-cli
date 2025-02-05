@@ -1,4 +1,3 @@
-import { response } from 'express';
 import { colorize } from 'json-colorizer';
 
 import { createPayment, retrievePayment } from '../nexi-api/payment.js';

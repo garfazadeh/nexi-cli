@@ -232,7 +232,7 @@ function createCheckout(options, consumer) {
     return checkout;
 }
 
-function addOptionalFields(payload, options, consumer) {
+function addOptionalFields(payload, options) {
     if (options.scheduled) {
         payload.subscription = {
             endDate: '2099-12-31T23:59:59.999Z',

@@ -36,7 +36,7 @@ function delay(ms) {
 }
 
 export default async function runTerminatePayment(options, arg) {
-    const paymentIds = [];
+    let paymentIds = [];
     if (options.file) {
         // read file containing payment ID
         const fileContent = readFileSync(options.file, 'utf8');
@@ -68,7 +68,7 @@ export default async function runTerminatePayment(options, arg) {
         console.table(responses);
     } else {
         console.log('');
-        const resultList = await responses.map(response => {
+        await responses.map(response => {
             console.log(colorize(JSON.stringify(response, null, 2)));
         });
     }
@@ -76,15 +76,9 @@ export default async function runTerminatePayment(options, arg) {
     if (options.save) {
         // create fields for csv file
         const fields = [
+            { label: 'Status', value: 'status' },
             { label: 'Payment ID', value: 'paymentId' },
-            { label: 'Currency', value: 'currency' },
-            { label: 'Payment Type', value: 'paymentType' },
-            { label: 'Payment Method', value: 'paymentMethod' },
-            { label: 'Reserved Amount', value: 'reservedAmount' },
-            { label: 'Charged Amount', value: 'chargedAmount' },
-            { label: 'Refunded Amount', value: 'refundedAmount' },
-            { label: 'Cancelled Amount', value: 'cancelledAmount' },
         ];
-        writeCsv('responses.csv', tableContent, fields);
+        writeCsv('responses.csv', responses, fields);
     }
 }

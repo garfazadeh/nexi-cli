@@ -36,7 +36,7 @@ function delay(ms) {
 }
 
 export default async function runFetchPayment(options, arg) {
-    const paymentIds = [];
+    let paymentIds = [];
     if (options.file) {
         // read file containing payment ID
         const fileContent = readFileSync(options.file, 'utf8');
